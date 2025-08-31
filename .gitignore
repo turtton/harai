@@ -13,6 +13,7 @@ dist/
 .idea/usage.statistics.xml
 .idea/shelf
 .direnv
+coverage
 
 # deps
 node_modules/
