@@ -16,12 +16,12 @@
   //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   //   }
   // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "harai-blog-assets"
+    }
+  ],
   // "d1_databases": [
   //   {
   //     "binding": "MY_DB",
