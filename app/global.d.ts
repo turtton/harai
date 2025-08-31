@@ -6,3 +6,11 @@ declare module 'hono' {
     Bindings: Record<string, unknown>
   }
 }
+
+import '@hono/react-renderer'
+
+declare module '@hono/react-renderer' {
+  interface Props {
+    title?: string
+  }
+}

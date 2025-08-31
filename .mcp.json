@@ -5,6 +5,10 @@
       "command": "bunx",
       "args": ["-y", "@mizchi/lsmcp", "-p", "tsgo"],
       "env": {}
+    },
+    "shadcn": {
+      "command": "bunx",
+      "args": ["shadcn@latest", "mcp"]
     }
   }
 }

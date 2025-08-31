@@ -13,9 +13,12 @@
   },
   "private": true,
   "dependencies": {
+    "@hono/react-renderer": "^1.0.1",
     "@hono/zod-validator": "^0.7.2",
     "hono": "^4.9.5",
     "honox": "^0.1.45",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "zod": "^4.1.5"
   },
   "devDependencies": {
@@ -25,7 +28,10 @@
     "@hono/vite-dev-server": "^0.18.2",
     "@mizchi/lsmcp": "^0.10.0",
     "@tailwindcss/vite": "^4.0.9",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
     "@typescript/native-preview": "^7.0.0-dev.20250830.1",
+    "shadcn": "^3.0.0",
     "tailwindcss": "^4.0.9",
     "vite": "^6.3.5",
     "wrangler": "^4.4.0"
