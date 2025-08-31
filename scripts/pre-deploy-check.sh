@@ -1,22 +1,34 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 echo "Running pre-deploy checks..."
 
 # テスト実行
 echo "Running tests..."
-bun run test:run
+if ! bun run test:run; then
+  echo "Error: Tests failed"
+  exit 1
+fi
 
 # 型チェック
 echo "Running type check..."
-bun run typecheck
+if ! bun run typecheck; then
+  echo "Error: Type check failed"
+  exit 1
+fi
 
 # リンターチェック
 echo "Running linter..."
-bun run ci
+if ! bun run ci; then
+  echo "Error: Linter check failed"
+  exit 1
+fi
 
 # ビルドチェック
 echo "Running build check..."
-bun run build
+if ! bun run build; then
+  echo "Error: Build failed"
+  exit 1
+fi
 
 echo "All pre-deploy checks passed!"
