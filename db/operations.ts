@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNotNull, isNull, like } from 'drizzle-orm'
+import { and, asc, desc, eq, isNull, like, lt } from 'drizzle-orm'
 import type { Database } from './client'
 import { articles, imageCache, resources } from './schema'
 
@@ -29,6 +29,32 @@ export class ArticleOperations {
     return await this.db.insert(articles).values(data).returning()
   }
 
+  // 記事とリソースを一緒に取得 (N+1問題を回避)
+  async getArticleWithResourcesBySlug(slug: string) {
+    const result = await this.db
+      .select({
+        article: articles,
+        resource: resources,
+      })
+      .from(articles)
+      .leftJoin(resources, eq(articles.id, resources.articleId))
+      .where(eq(articles.slug, slug))
+
+    if (result.length === 0) {
+      return null
+    }
+
+    const article = result[0].article
+    const articleResources = result
+      .filter((row) => row.resource !== null)
+      .map((row) => row.resource!)
+
+    return {
+      ...article,
+      resources: articleResources,
+    }
+  }
+
   // 記事を更新
   async updateArticle(id: string, data: Partial<typeof articles.$inferInsert>) {
     return await this.db
@@ -45,16 +71,20 @@ export class ArticleOperations {
 
   // タグで検索
   async searchByTag(tag: string) {
+    // SQLインジェクション対策: 特殊文字をエスケープ
+    const escapedTag = tag.replace(/[%_"\\]/g, '\\$&')
     return await this.db
       .select()
       .from(articles)
-      .where(and(eq(articles.published, true), like(articles.tags, `%"${tag}"%`)))
+      .where(and(eq(articles.published, true), like(articles.tags, `%"${escapedTag}"%`)))
       .orderBy(desc(articles.publishDate))
   }
 
   // タイトルまたは内容で検索
   async searchArticles(query: string) {
-    const searchTerm = `%${query}%`
+    // SQLインジェクション対策: 特殊文字をエスケープ
+    const escapedQuery = query.replace(/[%_\\]/g, '\\$&')
+    const searchTerm = `%${escapedQuery}%`
     return await this.db
       .select()
       .from(articles)
@@ -133,16 +163,18 @@ export class ImageCacheOperations {
   }
 
   // キャッシュを作成
-  async createCache(data: typeof imageCache.$inferInsert) {
-    return await this.db.insert(imageCache).values(data).returning()
+  async createCache(data: Omit<typeof imageCache.$inferInsert, 'id'>) {
+    const cacheData = {
+      id: crypto.randomUUID(), // UUID を生成
+      ...data,
+    }
+    return await this.db.insert(imageCache).values(cacheData).returning()
   }
 
   // 古いキャッシュを削除 (作成から30日以上経過)
   async cleanOldCache() {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-    return await this.db
-      .delete(imageCache)
-      .where(like(imageCache.createdAt, `%${thirtyDaysAgo.split('T')[0]}%`))
+    return await this.db.delete(imageCache).where(lt(imageCache.createdAt, thirtyDaysAgo))
   }
 
   // 特定の画像のすべてのキャッシュを削除

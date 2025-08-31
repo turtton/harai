@@ -1,21 +1,22 @@
+import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { createDrizzleClient, type Env } from '../../../db/client'
+import { DatabaseError, getErrorResponse, NotFoundError } from '../../../db/errors'
+import { Logger } from '../../../db/logger'
 import { DatabaseOperations } from '../../../db/operations'
+import { articleQuerySchema, articleSlugSchema } from '../../../db/validators'
 
 const app = new Hono<{ Bindings: Env }>()
 
 // 公開記事一覧を取得
-app.get('/', async (c) => {
+app.get('/', zValidator('query', articleQuerySchema), async (c) => {
   try {
     const db = createDrizzleClient(c.env.DB)
     const dbOps = new DatabaseOperations(db)
 
-    const limit = Number(c.req.query('limit')) || 20
-    const offset = Number(c.req.query('offset')) || 0
-    const tag = c.req.query('tag')
-    const search = c.req.query('search')
+    const { limit, offset, tag, search } = c.req.valid('query')
 
-    let articles
+    let articles: Awaited<ReturnType<typeof dbOps.articles.getPublishedArticles>>
 
     if (tag) {
       articles = await dbOps.articles.searchByTag(tag)
@@ -35,55 +36,50 @@ app.get('/', async (c) => {
       },
     })
   } catch (error) {
-    console.error('Error fetching articles:', error)
-    return c.json(
-      {
-        success: false,
-        error: 'Failed to fetch articles',
-      },
-      500
+    Logger.error('Failed to fetch articles', error, {
+      operation: 'getPublishedArticles',
+      query: c.req.valid('query'),
+    })
+
+    const errorResponse = getErrorResponse(
+      new DatabaseError('Failed to fetch articles', 'getPublishedArticles', error)
     )
+
+    return c.json(errorResponse, errorResponse.status)
   }
 })
 
 // スラッグで特定記事を取得
-app.get('/:slug', async (c) => {
+app.get('/:slug', zValidator('param', articleSlugSchema), async (c) => {
   try {
-    const slug = c.req.param('slug')
+    const { slug } = c.req.valid('param')
     const db = createDrizzleClient(c.env.DB)
     const dbOps = new DatabaseOperations(db)
 
-    const article = await dbOps.articles.getArticleBySlug(slug)
+    // N+1問題を回避した効率的なクエリを使用
+    const articleWithResources = await dbOps.articles.getArticleWithResourcesBySlug(slug)
 
-    if (!article) {
-      return c.json(
-        {
-          success: false,
-          error: 'Article not found',
-        },
-        404
-      )
+    if (!articleWithResources) {
+      const notFoundError = new NotFoundError('Article not found', 'article', slug)
+      const errorResponse = getErrorResponse(notFoundError)
+      return c.json(errorResponse, errorResponse.status)
     }
-
-    // 記事に関連するリソースも取得
-    const relatedResources = await dbOps.resources.getResourcesByArticleId(article.id)
 
     return c.json({
       success: true,
-      data: {
-        ...article,
-        resources: relatedResources,
-      },
+      data: articleWithResources,
     })
   } catch (error) {
-    console.error('Error fetching article:', error)
-    return c.json(
-      {
-        success: false,
-        error: 'Failed to fetch article',
-      },
-      500
+    Logger.error('Failed to fetch article', error, {
+      operation: 'getArticleWithResourcesBySlug',
+      slug,
+    })
+
+    const errorResponse = getErrorResponse(
+      new DatabaseError('Failed to fetch article', 'getArticleWithResourcesBySlug', error)
     )
+
+    return c.json(errorResponse, errorResponse.status)
   }
 })
 

@@ -49,6 +49,7 @@ export const resources = sqliteTable(
 export const imageCache = sqliteTable(
   'image_cache',
   {
+    id: text('id').primaryKey(), // UUID主キーを追加
     originalR2Key: text('original_r2_key').notNull(),
     width: integer('width').notNull(),
     height: integer('height'),
@@ -58,7 +59,12 @@ export const imageCache = sqliteTable(
   },
   (table) => ({
     originalIdx: index('idx_image_cache_original').on(table.originalR2Key),
-    // 複合主キー (original_r2_key, width, height, format)
-    pk: index('pk_image_cache').on(table.originalR2Key, table.width, table.height, table.format),
+    // 複合ユニークインデックス (重複防止)
+    uniqueParams: index('uk_image_cache_params').on(
+      table.originalR2Key,
+      table.width,
+      table.height,
+      table.format
+    ),
   })
 )
