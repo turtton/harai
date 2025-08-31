@@ -47,7 +47,11 @@ app.get('/:articleId/:slug', zValidator('param', resourceParamsSchema), async (c
     const resource = await dbOps.resources.getResourceBySlug(articleId, slug)
 
     if (!resource) {
-      const notFoundError = new NotFoundError('Resource not found', 'resource', `${articleId}/${slug}`)
+      const notFoundError = new NotFoundError(
+        'Resource not found',
+        'resource',
+        `${articleId}/${slug}`
+      )
       const errorResponse = getErrorResponse(notFoundError)
       return c.json(errorResponse, errorResponse.status)
     }

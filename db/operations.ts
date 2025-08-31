@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull, like, lt, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, isNull, lt, sql } from 'drizzle-orm'
 import type { Database } from './client'
 import { CACHE_RETENTION_MS } from './constants'
 import { articles, imageCache, resources } from './schema'
@@ -91,12 +91,7 @@ export class ArticleOperations {
     return await this.db
       .select()
       .from(articles)
-      .where(
-        and(
-          eq(articles.published, true),
-          sql`${articles.title} LIKE '%' || ${query} || '%'`
-        )
-      )
+      .where(and(eq(articles.published, true), sql`${articles.title} LIKE '%' || ${query} || '%'`))
       .orderBy(desc(articles.publishDate))
   }
 }
