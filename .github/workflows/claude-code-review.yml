@@ -29,7 +29,9 @@ jobs:
         uses: lewagon/wait-on-check-action@0dceb95e7c4cad8cc7422aee3885998f5cab9c79 # v1.4.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          check-name: Build Check
+          check-name: 'Build Check'
+          wait-interval: '30'
+          allowed-conclusions: 'success'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
   claude-review:
