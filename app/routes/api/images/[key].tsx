@@ -71,7 +71,7 @@ app.get(
         new DatabaseError('Failed to handle image request', 'getCachedImage', error)
       )
 
-      return c.json(errorResponse, errorResponse.status)
+      return c.json(errorResponse, errorResponse.status as any)
     }
   }
 )
@@ -115,7 +115,7 @@ app.post(
         new DatabaseError('Failed to create image cache', 'createCache', error)
       )
 
-      return c.json(errorResponse, errorResponse.status)
+      return c.json(errorResponse, errorResponse.status as any)
     }
   }
 )

@@ -45,7 +45,7 @@ app.get('/', zValidator('query', articleQuerySchema), async (c) => {
       new DatabaseError('Failed to fetch articles', 'getPublishedArticles', error)
     )
 
-    return c.json(errorResponse, errorResponse.status)
+    return c.json(errorResponse, errorResponse.status as any)
   }
 })
 
@@ -62,7 +62,7 @@ app.get('/:slug', zValidator('param', articleSlugSchema), async (c) => {
     if (!articleWithResources) {
       const notFoundError = new NotFoundError('Article not found', 'article', slug)
       const errorResponse = getErrorResponse(notFoundError)
-      return c.json(errorResponse, errorResponse.status)
+      return c.json(errorResponse, errorResponse.status as any)
     }
 
     return c.json({
@@ -80,7 +80,7 @@ app.get('/:slug', zValidator('param', articleSlugSchema), async (c) => {
       new DatabaseError('Failed to fetch article', 'getArticleWithResourcesBySlug', error)
     )
 
-    return c.json(errorResponse, errorResponse.status)
+    return c.json(errorResponse, errorResponse.status as any)
   }
 })
 

@@ -72,14 +72,15 @@ export class ArticleOperations {
 
   // タグで検索
   async searchByTag(tag: string) {
-    // SQLインジェクション対策: パラメータ化クエリを使用
+    // SQLインジェクション対策: JSON配列内の文字列検索（完全一致）
+    const searchPattern = `%"${tag.replace(/"/g, '\"')}"%`
     return await this.db
       .select()
       .from(articles)
       .where(
         and(
           eq(articles.published, true),
-          sql`json_extract(${articles.tags}, '$') LIKE '%"' || ${tag} || '"%'`
+          sql`json_extract(${articles.tags}, '$') LIKE ${searchPattern}`
         )
       )
       .orderBy(desc(articles.publishDate))
@@ -87,11 +88,18 @@ export class ArticleOperations {
 
   // タイトルまたは内容で検索
   async searchArticles(query: string) {
-    // SQLインジェクション対策: パラメータ化クエリを使用
+    // SQLインジェクション対策: LIKE特殊文字をエスケープしてパラメータ化
+    const escapedQuery = query.replace(/[%_\\]/g, '\\$&')
+    const searchPattern = `%${escapedQuery}%`
     return await this.db
       .select()
       .from(articles)
-      .where(and(eq(articles.published, true), sql`${articles.title} LIKE '%' || ${query} || '%'`))
+      .where(
+        and(
+          eq(articles.published, true),
+          sql`${articles.title} LIKE ${searchPattern} ESCAPE '\\'`
+        )
+      )
       .orderBy(desc(articles.publishDate))
   }
 }
