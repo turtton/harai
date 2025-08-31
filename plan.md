@@ -122,7 +122,7 @@ Cloudflareエコシステムで完結する、Markdown記事とPDFスライド�
       "type": "image|pdf",
       "data": "Base64エンコードされたデータ",
       "originalName": "元ファイル名",
-      "size": ファイルサイズ
+      "size": "ファイルサイズ"
     }
   ]
 }
