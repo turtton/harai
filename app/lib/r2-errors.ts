@@ -1,5 +1,8 @@
 export class R2Error extends Error {
-  constructor(message: string, public code: string) {
+  constructor(
+    message: string,
+    public code: string
+  ) {
     super(message)
     this.name = 'R2Error'
   }

@@ -6,7 +6,7 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist"
-  }
+  },
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },
@@ -21,7 +21,7 @@
       "binding": "R2",
       "bucket_name": "harai-blog-assets"
     }
-  ],
+  ]
   // "d1_databases": [
   //   {
   //     "binding": "MY_DB",

@@ -9,11 +9,20 @@ export function validateFileType(contentType: string, type: 'image' | 'pdf'): bo
   return contentType === ALLOWED_PDF_TYPE
 }
 
-export function generateR2Key(articleSlug: string, resourceSlug: string, extension: string): string {
+export function generateR2Key(
+  articleSlug: string,
+  resourceSlug: string,
+  extension: string
+): string {
   return `articles/${articleSlug}/${resourceSlug}.${extension}`
 }
 
-export function generateCacheKey(originalKey: string, width: number, height?: number, format?: string): string {
+export function generateCacheKey(
+  originalKey: string,
+  width: number,
+  height?: number,
+  format?: string
+): string {
   const hash = btoa(originalKey).replace(/[+/=]/g, '')
   const dimensions = height ? `${width}x${height}` : `${width}`
   const ext = format || 'webp'

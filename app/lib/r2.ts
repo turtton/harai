@@ -11,7 +11,7 @@ export class CloudflareR2Service implements R2Service {
 
   async upload(key: string, data: ArrayBuffer, contentType?: string): Promise<void> {
     await this.r2.put(key, data, {
-      httpMetadata: contentType ? { contentType } : undefined
+      httpMetadata: contentType ? { contentType } : undefined,
     })
   }
 
