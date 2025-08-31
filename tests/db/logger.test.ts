@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { logError, logWarn, logInfo, logDebug } from '../../db/logger'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { logDebug, logError, logInfo, logWarn } from '../../db/logger'
 
 describe('Logger Functions', () => {
-  let consoleErrorSpy: any
-  let consoleWarnSpy: any
-  let consoleLogSpy: any
-  let consoleDebugSpy: any
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>
+  let consoleDebugSpy: ReturnType<typeof vi.spyOn>
 
   beforeEach(() => {
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -26,8 +26,8 @@ describe('Logger Functions', () => {
       logError('Something went wrong', error, context)
 
       expect(consoleErrorSpy).toHaveBeenCalledOnce()
-      
-      const loggedMessage = consoleErrorSpy.mock.calls[0][0]
+
+      const loggedMessage = consoleErrorSpy.mock.calls[0][0] as string
       const parsedLog = JSON.parse(loggedMessage)
 
       expect(parsedLog.level).toBe('error')
@@ -41,12 +41,12 @@ describe('Logger Functions', () => {
 
     it('should log error with non-Error object', () => {
       const error = 'String error'
-      
+
       logError('Something went wrong', error)
 
       expect(consoleErrorSpy).toHaveBeenCalledOnce()
-      
-      const loggedMessage = consoleErrorSpy.mock.calls[0][0]
+
+      const loggedMessage = consoleErrorSpy.mock.calls[0][0] as string
       const parsedLog = JSON.parse(loggedMessage)
 
       expect(parsedLog.error).toBe('String error')
@@ -54,12 +54,12 @@ describe('Logger Functions', () => {
 
     it('should log error without context', () => {
       const error = new Error('Test error')
-      
+
       logError('Something went wrong', error)
 
       expect(consoleErrorSpy).toHaveBeenCalledOnce()
-      
-      const loggedMessage = consoleErrorSpy.mock.calls[0][0]
+
+      const loggedMessage = consoleErrorSpy.mock.calls[0][0] as string
       const parsedLog = JSON.parse(loggedMessage)
 
       expect(parsedLog.context).toBeUndefined()
@@ -73,8 +73,8 @@ describe('Logger Functions', () => {
       logWarn('This feature is deprecated', context)
 
       expect(consoleWarnSpy).toHaveBeenCalledOnce()
-      
-      const loggedMessage = consoleWarnSpy.mock.calls[0][0]
+
+      const loggedMessage = consoleWarnSpy.mock.calls[0][0] as string
       const parsedLog = JSON.parse(loggedMessage)
 
       expect(parsedLog.level).toBe('warn')
@@ -91,8 +91,8 @@ describe('Logger Functions', () => {
       logInfo('Application started', context)
 
       expect(consoleLogSpy).toHaveBeenCalledOnce()
-      
-      const loggedMessage = consoleLogSpy.mock.calls[0][0]
+
+      const loggedMessage = consoleLogSpy.mock.calls[0][0] as string
       const parsedLog = JSON.parse(loggedMessage)
 
       expect(parsedLog.level).toBe('info')
@@ -109,8 +109,8 @@ describe('Logger Functions', () => {
       logDebug('Database query executed', context)
 
       expect(consoleDebugSpy).toHaveBeenCalledOnce()
-      
-      const loggedMessage = consoleDebugSpy.mock.calls[0][0]
+
+      const loggedMessage = consoleDebugSpy.mock.calls[0][0] as string
       const parsedLog = JSON.parse(loggedMessage)
 
       expect(parsedLog.level).toBe('debug')
@@ -123,7 +123,7 @@ describe('Logger Functions', () => {
   describe('Log format consistency', () => {
     it('should have consistent timestamp format across all log levels', () => {
       const beforeTime = Date.now()
-      
+
       logError('Error message', new Error())
       logWarn('Warning message')
       logInfo('Info message')
@@ -132,10 +132,10 @@ describe('Logger Functions', () => {
       const afterTime = Date.now()
 
       // Check that all logs have valid timestamps
-      const errorLog = JSON.parse(consoleErrorSpy.mock.calls[0][0])
-      const warnLog = JSON.parse(consoleWarnSpy.mock.calls[0][0])
-      const infoLog = JSON.parse(consoleLogSpy.mock.calls[0][0])
-      const debugLog = JSON.parse(consoleDebugSpy.mock.calls[0][0])
+      const errorLog = JSON.parse(consoleErrorSpy.mock.calls[0][0] as string)
+      const warnLog = JSON.parse(consoleWarnSpy.mock.calls[0][0] as string)
+      const infoLog = JSON.parse(consoleLogSpy.mock.calls[0][0] as string)
+      const debugLog = JSON.parse(consoleDebugSpy.mock.calls[0][0] as string)
 
       const errorTime = new Date(errorLog.timestamp).getTime()
       const warnTime = new Date(warnLog.timestamp).getTime()

@@ -71,7 +71,10 @@ app.get(
         new DatabaseError('Failed to handle image request', 'getCachedImage', error)
       )
 
-      return c.json(errorResponse, errorResponse.status as any)
+      return new Response(JSON.stringify(errorResponse), {
+        status: errorResponse.status,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
   }
 )
@@ -115,7 +118,10 @@ app.post(
         new DatabaseError('Failed to create image cache', 'createCache', error)
       )
 
-      return c.json(errorResponse, errorResponse.status as any)
+      return new Response(JSON.stringify(errorResponse), {
+        status: errorResponse.status,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
   }
 )

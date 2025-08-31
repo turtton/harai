@@ -73,7 +73,7 @@ export class ArticleOperations {
   // タグで検索
   async searchByTag(tag: string) {
     // SQLインジェクション対策: JSON配列内の文字列検索（完全一致）
-    const searchPattern = `%"${tag.replace(/"/g, '\"')}"%`
+    const searchPattern = `%"${tag.replace(/"/g, '"')}"%`
     return await this.db
       .select()
       .from(articles)
@@ -95,10 +95,7 @@ export class ArticleOperations {
       .select()
       .from(articles)
       .where(
-        and(
-          eq(articles.published, true),
-          sql`${articles.title} LIKE ${searchPattern} ESCAPE '\\'`
-        )
+        and(eq(articles.published, true), sql`${articles.title} LIKE ${searchPattern} ESCAPE '\\'`)
       )
       .orderBy(desc(articles.publishDate))
   }

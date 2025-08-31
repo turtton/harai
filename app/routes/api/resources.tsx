@@ -33,7 +33,10 @@ app.get('/', zValidator('query', resourceQuerySchema), async (c) => {
       new DatabaseError('Failed to fetch resources', 'getResourcesByArticleId', error)
     )
 
-    return c.json(errorResponse, errorResponse.status as any)
+    return new Response(JSON.stringify(errorResponse), {
+      status: errorResponse.status,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 })
 
@@ -54,7 +57,10 @@ app.get('/:articleId/:slug', zValidator('param', resourceParamsSchema), async (c
         `${articleId}/${slug}`
       )
       const errorResponse = getErrorResponse(notFoundError)
-      return c.json(errorResponse, errorResponse.status as any)
+      return new Response(JSON.stringify(errorResponse), {
+        status: errorResponse.status,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     return c.json({
@@ -73,7 +79,10 @@ app.get('/:articleId/:slug', zValidator('param', resourceParamsSchema), async (c
       new DatabaseError('Failed to fetch resource', 'getResourceBySlug', error)
     )
 
-    return c.json(errorResponse, errorResponse.status as any)
+    return new Response(JSON.stringify(errorResponse), {
+      status: errorResponse.status,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 })
 

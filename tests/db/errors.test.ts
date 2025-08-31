@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
-  DatabaseError,
-  ValidationError,
-  NotFoundError,
   AuthenticationError,
   AuthorizationError,
+  DatabaseError,
   getErrorResponse,
+  NotFoundError,
+  ValidationError,
 } from '../../db/errors'
 
 describe('Error Classes', () => {
@@ -28,11 +28,7 @@ describe('Error Classes', () => {
 
   describe('ValidationError', () => {
     it('should create validation error with field and code', () => {
-      const error = new ValidationError(
-        'Invalid email format',
-        'email',
-        'INVALID_FORMAT'
-      )
+      const error = new ValidationError('Invalid email format', 'email', 'INVALID_FORMAT')
 
       expect(error.name).toBe('ValidationError')
       expect(error.message).toBe('Invalid email format')
@@ -43,11 +39,7 @@ describe('Error Classes', () => {
 
   describe('NotFoundError', () => {
     it('should create not found error with resource info', () => {
-      const error = new NotFoundError(
-        'User not found',
-        'user',
-        '123'
-      )
+      const error = new NotFoundError('User not found', 'user', '123')
 
       expect(error.name).toBe('NotFoundError')
       expect(error.message).toBe('User not found')

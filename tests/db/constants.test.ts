@@ -1,15 +1,15 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
   CACHE_RETENTION_DAYS,
   CACHE_RETENTION_MS,
   DEFAULT_PAGE_LIMIT,
-  MAX_PAGE_LIMIT,
-  MAX_SLUG_LENGTH,
-  MAX_TAG_LENGTH,
-  MAX_SEARCH_QUERY_LENGTH,
+  MAX_IMAGE_HEIGHT,
   MAX_IMAGE_KEY_LENGTH,
   MAX_IMAGE_WIDTH,
-  MAX_IMAGE_HEIGHT,
+  MAX_PAGE_LIMIT,
+  MAX_SEARCH_QUERY_LENGTH,
+  MAX_SLUG_LENGTH,
+  MAX_TAG_LENGTH,
   SUPPORTED_IMAGE_FORMATS,
 } from '../../db/constants'
 
@@ -36,7 +36,7 @@ describe('Database Constants', () => {
       expect(MAX_TAG_LENGTH).toBe(50)
       expect(MAX_SEARCH_QUERY_LENGTH).toBe(255)
       expect(MAX_IMAGE_KEY_LENGTH).toBe(500)
-      
+
       // Ensure reasonable hierarchy
       expect(MAX_TAG_LENGTH).toBeLessThan(MAX_SLUG_LENGTH)
       expect(MAX_IMAGE_KEY_LENGTH).toBeGreaterThan(MAX_SLUG_LENGTH)
