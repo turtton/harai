@@ -1,5 +1,6 @@
-import { and, asc, desc, eq, isNull, like, lt } from 'drizzle-orm'
+import { and, asc, desc, eq, isNull, like, lt, sql } from 'drizzle-orm'
 import type { Database } from './client'
+import { CACHE_RETENTION_MS } from './constants'
 import { articles, imageCache, resources } from './schema'
 
 // 記事操作
@@ -71,24 +72,31 @@ export class ArticleOperations {
 
   // タグで検索
   async searchByTag(tag: string) {
-    // SQLインジェクション対策: 特殊文字をエスケープ
-    const escapedTag = tag.replace(/[%_"\\]/g, '\\$&')
+    // SQLインジェクション対策: パラメータ化クエリを使用
     return await this.db
       .select()
       .from(articles)
-      .where(and(eq(articles.published, true), like(articles.tags, `%"${escapedTag}"%`)))
+      .where(
+        and(
+          eq(articles.published, true),
+          sql`json_extract(${articles.tags}, '$') LIKE '%"' || ${tag} || '"%'`
+        )
+      )
       .orderBy(desc(articles.publishDate))
   }
 
   // タイトルまたは内容で検索
   async searchArticles(query: string) {
-    // SQLインジェクション対策: 特殊文字をエスケープ
-    const escapedQuery = query.replace(/[%_\\]/g, '\\$&')
-    const searchTerm = `%${escapedQuery}%`
+    // SQLインジェクション対策: パラメータ化クエリを使用
     return await this.db
       .select()
       .from(articles)
-      .where(and(eq(articles.published, true), like(articles.title, searchTerm)))
+      .where(
+        and(
+          eq(articles.published, true),
+          sql`${articles.title} LIKE '%' || ${query} || '%'`
+        )
+      )
       .orderBy(desc(articles.publishDate))
   }
 }
@@ -171,10 +179,10 @@ export class ImageCacheOperations {
     return await this.db.insert(imageCache).values(cacheData).returning()
   }
 
-  // 古いキャッシュを削除 (作成から30日以上経過)
+  // 古いキャッシュを削除 (作成から設定された期間以上経過)
   async cleanOldCache() {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-    return await this.db.delete(imageCache).where(lt(imageCache.createdAt, thirtyDaysAgo))
+    const cutoffDate = new Date(Date.now() - CACHE_RETENTION_MS).toISOString()
+    return await this.db.delete(imageCache).where(lt(imageCache.createdAt, cutoffDate))
   }
 
   // 特定の画像のすべてのキャッシュを削除

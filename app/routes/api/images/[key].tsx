@@ -1,6 +1,8 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { createDrizzleClient, type Env } from '../../../../db/client'
+import { DatabaseError, getErrorResponse } from '../../../../db/errors'
+import { logError } from '../../../../db/logger'
 import { DatabaseOperations } from '../../../../db/operations'
 import {
   imageCacheCreateSchema,
@@ -55,14 +57,21 @@ app.get(
         },
       })
     } catch (error) {
-      console.error('Error handling image request:', error)
-      return c.json(
-        {
-          success: false,
-          error: error instanceof Error ? error.message : 'Failed to handle image request',
-        },
-        500
+      const { key } = c.req.valid('param')
+      const { w: width, h: height, f: format } = c.req.valid('query')
+      logError('Failed to handle image request', error, {
+        operation: 'getCachedImage',
+        key,
+        width,
+        height,
+        format,
+      })
+
+      const errorResponse = getErrorResponse(
+        new DatabaseError('Failed to handle image request', 'getCachedImage', error)
       )
+
+      return c.json(errorResponse, errorResponse.status)
     }
   }
 )
@@ -96,14 +105,17 @@ app.post(
         data: result[0],
       })
     } catch (error) {
-      console.error('Error creating image cache:', error)
-      return c.json(
-        {
-          success: false,
-          error: error instanceof Error ? error.message : 'Failed to create image cache',
-        },
-        500
+      const { key } = c.req.valid('param')
+      logError('Failed to create image cache', error, {
+        operation: 'createCache',
+        key,
+      })
+
+      const errorResponse = getErrorResponse(
+        new DatabaseError('Failed to create image cache', 'createCache', error)
       )
+
+      return c.json(errorResponse, errorResponse.status)
     }
   }
 )

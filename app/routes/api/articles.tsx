@@ -70,6 +70,7 @@ app.get('/:slug', zValidator('param', articleSlugSchema), async (c) => {
       data: articleWithResources,
     })
   } catch (error) {
+    const { slug } = c.req.valid('param')
     logError('Failed to fetch article', error, {
       operation: 'getArticleWithResourcesBySlug',
       slug,

@@ -1,6 +1,8 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { createDrizzleClient, type Env } from '../../../db/client'
+import { DatabaseError, getErrorResponse, NotFoundError } from '../../../db/errors'
+import { logError } from '../../../db/logger'
 import { DatabaseOperations } from '../../../db/operations'
 import { resourceParamsSchema, resourceQuerySchema } from '../../../db/validators'
 
@@ -21,14 +23,16 @@ app.get('/', zValidator('query', resourceQuerySchema), async (c) => {
       data: resources,
     })
   } catch (error) {
-    console.error('Error fetching resources:', error)
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch resources',
-      },
-      500
+    logError('Failed to fetch resources', error, {
+      operation: 'getResourcesByArticleId',
+      articleId: article_id,
+    })
+
+    const errorResponse = getErrorResponse(
+      new DatabaseError('Failed to fetch resources', 'getResourcesByArticleId', error)
     )
+
+    return c.json(errorResponse, errorResponse.status)
   }
 })
 
@@ -43,13 +47,9 @@ app.get('/:articleId/:slug', zValidator('param', resourceParamsSchema), async (c
     const resource = await dbOps.resources.getResourceBySlug(articleId, slug)
 
     if (!resource) {
-      return c.json(
-        {
-          success: false,
-          error: 'Resource not found',
-        },
-        404
-      )
+      const notFoundError = new NotFoundError('Resource not found', 'resource', `${articleId}/${slug}`)
+      const errorResponse = getErrorResponse(notFoundError)
+      return c.json(errorResponse, errorResponse.status)
     }
 
     return c.json({
@@ -57,14 +57,17 @@ app.get('/:articleId/:slug', zValidator('param', resourceParamsSchema), async (c
       data: resource,
     })
   } catch (error) {
-    console.error('Error fetching resource:', error)
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch resource',
-      },
-      500
+    logError('Failed to fetch resource', error, {
+      operation: 'getResourceBySlug',
+      articleId,
+      slug,
+    })
+
+    const errorResponse = getErrorResponse(
+      new DatabaseError('Failed to fetch resource', 'getResourceBySlug', error)
     )
+
+    return c.json(errorResponse, errorResponse.status)
   }
 })
 

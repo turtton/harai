@@ -44,14 +44,4 @@ export const imageCacheCreateSchema = z.object({
   cached_r2_key: z.string().min(1).max(500),
 })
 
-// 共通のエラー型
-export class ValidationError extends Error {
-  constructor(
-    message: string,
-    public field?: string,
-    public code?: string
-  ) {
-    super(message)
-    this.name = 'ValidationError'
-  }
-}
+// ValidationError は errors.ts で定義されているため、ここでは削除
