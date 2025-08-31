@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "extends": "./wrangler.jsonc",
+  "name": "harai-staging",
+  "env": {
+    "ENVIRONMENT": "staging"
+  }
+  // 必要に応じて staging 固有の設定を追加
+  // "vars": {
+  //   "MY_VAR": "staging-value"
+  // },
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "MY_KV_NAMESPACE",
+  //     "id": "staging-kv-namespace-id"
+  //   }
+  // ]
+}
