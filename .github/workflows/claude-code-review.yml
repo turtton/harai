@@ -18,9 +18,23 @@ jobs:
     name: Check user permission
     uses: ./.github/workflows/reusable-permission-check.yml
 
+  wait-for-ci:
+    name: Wait for CI completion
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Wait for CI workflow
+        uses: lewagon/wait-on-check-action@0dceb95e7c4cad8cc7422aee3885998f5cab9c79 # v1.4.0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: Build Check
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
   claude-review:
     name: Review on claude
-    needs: check-permission
+    needs: [check-permission, wait-for-ci]
     if: needs.check-permission.outputs.has-write == 'true'
 
     runs-on: ubuntu-latest
