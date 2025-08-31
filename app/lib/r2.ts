@@ -5,12 +5,6 @@ export interface R2Service {
   get(key: string): Promise<R2Object | null>
   delete(key: string): Promise<void>
   list(prefix?: string): Promise<R2Objects>
-  /**
-   * Generate a signed URL for accessing the object
-   * @param key - The object key
-   * @param expiresIn - Expiration time in seconds (default: 3600)
-   */
-  getSignedUrl(key: string, expiresIn?: number): Promise<string>
 }
 
 export class CloudflareR2Service implements R2Service {
@@ -62,21 +56,6 @@ export class CloudflareR2Service implements R2Service {
       return await this.r2.list({ prefix })
     } catch (_error) {
       throw new R2Error(`Failed to list objects with prefix: ${prefix}`, 'LIST_FAILED')
-    }
-  }
-
-  async getSignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
-    if (!key || key.trim().length === 0) {
-      throw new R2Error('Key cannot be empty', 'INVALID_KEY')
-    }
-    if (expiresIn <= 0) {
-      throw new R2Error('Expiration time must be positive', 'INVALID_EXPIRY')
-    }
-
-    try {
-      return await this.r2.createPresignedUrl(key, 'GET', { expiresIn })
-    } catch (_error) {
-      throw new R2Error(`Failed to create signed URL for: ${key}`, 'SIGNED_URL_FAILED')
     }
   }
 }
