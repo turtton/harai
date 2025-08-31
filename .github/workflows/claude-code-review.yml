@@ -16,14 +16,7 @@ permissions:
 jobs:
   check-permission:
     name: Check user permission
-    runs-on: ubuntu-latest
-    outputs:
-      has-write: ${{ steps.check.outputs.has-permission }}
-    steps:
-      - uses: shiguredo/github-actions/.github/actions/check-write-permission@35a6c15b4bd19f797f77630c404c6372c5ee6fdf # main
-        id: check
-        with:
-          username: ${{ github.actor }}
+    uses: ./.github/workflows/reusable-permission-check.yml
 
   claude-review:
     name: Review on claude
