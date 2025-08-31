@@ -201,7 +201,7 @@ published: true/false
 - デプロイAPIは認証トークン必須
 - CSRFトークン不要（Read Onlyのため）
 - XSS対策: Markdown出力時のサニタイズ
-- R2アクセスは署名付きURL使用
+- R2アクセスはWorker経由で直接実行
 
 ### 8. パフォーマンス要件
 
