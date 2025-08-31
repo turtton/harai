@@ -1,3 +1,4 @@
+import path from 'node:path'
 import build from '@hono/vite-build/cloudflare-workers'
 import adapter from '@hono/vite-dev-server/cloudflare'
 import tailwindcss from '@tailwindcss/vite'
@@ -5,8 +6,16 @@ import honox from 'honox/vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) => {
+  const common = {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './app'),
+      },
+    },
+  }
   if (mode === 'client') {
     return {
+      ...common,
       build: {
         rollupOptions: {
           input: ['./app/client.ts', './app/style.css'],
@@ -22,6 +31,7 @@ export default defineConfig(({ mode }) => {
     }
   } else {
     return {
+      ...common,
       plugins: [
         honox({
           devServer: { adapter },

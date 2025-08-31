@@ -23,6 +23,7 @@ Cloudflareエコシステムで完結する、Markdown記事とPDFスライド�
 - **データベース**: Cloudflare D1
 - **ファイルストレージ**: Cloudflare R2
 - **スタイリング**: Tailwind CSS
+- **UIコンポーネント**: shadcn/ui
 - **Markdownパーサー**: marked + Shiki
 - **PDFビューワー**: PDF.js
 - **パッケージマネージャー**: Bun
