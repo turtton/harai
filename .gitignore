@@ -33,6 +33,7 @@ lerna-debug.log*
 
 # misc
 .DS_Store
+WORK_INSTRUCTIONS.md
 
 # lsmcp cache
 .lsmcp/cache
