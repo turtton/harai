@@ -2,7 +2,7 @@ import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { createDrizzleClient, type Env } from '../../../db/client'
 import { DatabaseError, getErrorResponse, NotFoundError } from '../../../db/errors'
-import { Logger } from '../../../db/logger'
+import { logError } from '../../../db/logger'
 import { DatabaseOperations } from '../../../db/operations'
 import { articleQuerySchema, articleSlugSchema } from '../../../db/validators'
 
@@ -36,7 +36,7 @@ app.get('/', zValidator('query', articleQuerySchema), async (c) => {
       },
     })
   } catch (error) {
-    Logger.error('Failed to fetch articles', error, {
+    logError('Failed to fetch articles', error, {
       operation: 'getPublishedArticles',
       query: c.req.valid('query'),
     })
@@ -70,7 +70,7 @@ app.get('/:slug', zValidator('param', articleSlugSchema), async (c) => {
       data: articleWithResources,
     })
   } catch (error) {
-    Logger.error('Failed to fetch article', error, {
+    logError('Failed to fetch article', error, {
       operation: 'getArticleWithResourcesBySlug',
       slug,
     })
