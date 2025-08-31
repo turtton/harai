@@ -1,4 +1,4 @@
-import { R2Error, R2UploadError, R2NotFoundError } from './r2-errors'
+import { R2Error, R2UploadError } from './r2-errors'
 
 export interface R2Service {
   upload(key: string, data: ArrayBuffer, contentType?: string): Promise<void>
@@ -29,7 +29,7 @@ export class CloudflareR2Service implements R2Service {
   async get(key: string): Promise<R2Object | null> {
     try {
       return await this.r2.get(key)
-    } catch (error) {
+    } catch (_error) {
       throw new R2Error(`Failed to get object: ${key}`, 'GET_FAILED')
     }
   }
@@ -37,7 +37,7 @@ export class CloudflareR2Service implements R2Service {
   async delete(key: string): Promise<void> {
     try {
       await this.r2.delete(key)
-    } catch (error) {
+    } catch (_error) {
       throw new R2Error(`Failed to delete object: ${key}`, 'DELETE_FAILED')
     }
   }
@@ -45,7 +45,7 @@ export class CloudflareR2Service implements R2Service {
   async list(prefix?: string): Promise<R2Objects> {
     try {
       return await this.r2.list({ prefix })
-    } catch (error) {
+    } catch (_error) {
       throw new R2Error(`Failed to list objects with prefix: ${prefix}`, 'LIST_FAILED')
     }
   }
@@ -53,7 +53,7 @@ export class CloudflareR2Service implements R2Service {
   async getSignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
     try {
       return await this.r2.createPresignedUrl(key, 'GET', { expiresIn })
-    } catch (error) {
+    } catch (_error) {
       throw new R2Error(`Failed to create signed URL for: ${key}`, 'SIGNED_URL_FAILED')
     }
   }
