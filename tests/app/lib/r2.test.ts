@@ -35,6 +35,22 @@ describe('r2', () => {
         })
       })
 
+      it('should throw R2Error for empty key', async () => {
+        const data = new ArrayBuffer(1024)
+
+        await expect(service.upload('', data)).rejects.toThrow(R2Error)
+        await expect(service.upload('', data)).rejects.toThrow('Key cannot be empty')
+        await expect(service.upload('   ', data)).rejects.toThrow('Key cannot be empty')
+      })
+
+      it('should throw R2Error for empty data', async () => {
+        const key = 'test/file.jpg'
+        const data = new ArrayBuffer(0)
+
+        await expect(service.upload(key, data)).rejects.toThrow(R2Error)
+        await expect(service.upload(key, data)).rejects.toThrow('Data cannot be empty')
+      })
+
       it('should upload file without content type', async () => {
         const key = 'test/file.jpg'
         const data = new ArrayBuffer(1024)
@@ -73,6 +89,12 @@ describe('r2', () => {
         expect(mockR2Bucket.get).toHaveBeenCalledWith(key)
       })
 
+      it('should throw R2Error for empty key', async () => {
+        await expect(service.get('')).rejects.toThrow(R2Error)
+        await expect(service.get('')).rejects.toThrow('Key cannot be empty')
+        await expect(service.get('   ')).rejects.toThrow('Key cannot be empty')
+      })
+
       it('should return null when file not found', async () => {
         const key = 'test/missing.jpg'
 
@@ -103,6 +125,12 @@ describe('r2', () => {
         await service.delete(key)
 
         expect(mockR2Bucket.delete).toHaveBeenCalledWith(key)
+      })
+
+      it('should throw R2Error for empty key', async () => {
+        await expect(service.delete('')).rejects.toThrow(R2Error)
+        await expect(service.delete('')).rejects.toThrow('Key cannot be empty')
+        await expect(service.delete('   ')).rejects.toThrow('Key cannot be empty')
       })
 
       it('should throw R2Error on failure', async () => {
@@ -175,6 +203,20 @@ describe('r2', () => {
 
         expect(result).toBe(expectedUrl)
         expect(mockR2Bucket.createPresignedUrl).toHaveBeenCalledWith(key, 'GET', { expiresIn })
+      })
+
+      it('should throw R2Error for empty key', async () => {
+        await expect(service.getSignedUrl('')).rejects.toThrow(R2Error)
+        await expect(service.getSignedUrl('')).rejects.toThrow('Key cannot be empty')
+        await expect(service.getSignedUrl('   ')).rejects.toThrow('Key cannot be empty')
+      })
+
+      it('should throw R2Error for invalid expiration', async () => {
+        const key = 'test/file.jpg'
+        
+        await expect(service.getSignedUrl(key, 0)).rejects.toThrow(R2Error)
+        await expect(service.getSignedUrl(key, 0)).rejects.toThrow('Expiration time must be positive')
+        await expect(service.getSignedUrl(key, -100)).rejects.toThrow('Expiration time must be positive')
       })
 
       it('should throw R2Error on failure', async () => {

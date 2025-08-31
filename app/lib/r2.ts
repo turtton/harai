@@ -17,6 +17,13 @@ export class CloudflareR2Service implements R2Service {
   constructor(private r2: R2Bucket) {}
 
   async upload(key: string, data: ArrayBuffer, contentType?: string): Promise<void> {
+    if (!key || key.trim().length === 0) {
+      throw new R2Error('Key cannot be empty', 'INVALID_KEY')
+    }
+    if (data.byteLength === 0) {
+      throw new R2Error('Data cannot be empty', 'INVALID_DATA')
+    }
+    
     try {
       await this.r2.put(key, data, {
         httpMetadata: contentType ? { contentType } : undefined,
@@ -27,6 +34,10 @@ export class CloudflareR2Service implements R2Service {
   }
 
   async get(key: string): Promise<R2Object | null> {
+    if (!key || key.trim().length === 0) {
+      throw new R2Error('Key cannot be empty', 'INVALID_KEY')
+    }
+    
     try {
       return await this.r2.get(key)
     } catch (_error) {
@@ -35,6 +46,10 @@ export class CloudflareR2Service implements R2Service {
   }
 
   async delete(key: string): Promise<void> {
+    if (!key || key.trim().length === 0) {
+      throw new R2Error('Key cannot be empty', 'INVALID_KEY')
+    }
+    
     try {
       await this.r2.delete(key)
     } catch (_error) {
@@ -51,6 +66,13 @@ export class CloudflareR2Service implements R2Service {
   }
 
   async getSignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
+    if (!key || key.trim().length === 0) {
+      throw new R2Error('Key cannot be empty', 'INVALID_KEY')
+    }
+    if (expiresIn <= 0) {
+      throw new R2Error('Expiration time must be positive', 'INVALID_EXPIRY')
+    }
+    
     try {
       return await this.r2.createPresignedUrl(key, 'GET', { expiresIn })
     } catch (_error) {

@@ -6,6 +6,7 @@ import {
   validateFileType,
   validateFileSize,
   sanitizeSlug,
+  sanitizeExtension,
   generateR2Key,
   generateCacheKey,
 } from '../../../app/lib/file-utils'
@@ -57,6 +58,28 @@ describe('file-utils', () => {
     })
   })
 
+  describe('sanitizeExtension', () => {
+    it('should remove non-alphanumeric characters', () => {
+      expect(sanitizeExtension('jpg')).toBe('jpg')
+      expect(sanitizeExtension('p.d.f')).toBe('pdf')
+      expect(sanitizeExtension('web-p')).toBe('webp')
+      expect(sanitizeExtension('jpeg!')).toBe('jpeg')
+      expect(sanitizeExtension('../exe')).toBe('exe')
+    })
+
+    it('should convert to lowercase', () => {
+      expect(sanitizeExtension('JPG')).toBe('jpg')
+      expect(sanitizeExtension('PNG')).toBe('png')
+      expect(sanitizeExtension('PDF')).toBe('pdf')
+    })
+
+    it('should handle empty and special cases', () => {
+      expect(sanitizeExtension('')).toBe('')
+      expect(sanitizeExtension('123')).toBe('123')
+      expect(sanitizeExtension('!@#$%')).toBe('')
+    })
+  })
+
   describe('generateR2Key', () => {
     it('should generate correct R2 key with sanitization', () => {
       const result = generateR2Key('my-article', 'my-image', 'jpg')
@@ -70,7 +93,17 @@ describe('file-utils', () => {
 
     it('should handle uppercase input', () => {
       const result = generateR2Key('Article-Slug', 'Image.Name', 'PNG')
-      expect(result).toBe('articles/article-slug/image-name.PNG')
+      expect(result).toBe('articles/article-slug/image-name.png')
+    })
+
+    it('should sanitize malicious extension', () => {
+      const result = generateR2Key('test', 'file', '../exe')
+      expect(result).toBe('articles/test/file.exe')
+    })
+
+    it('should handle special characters in extension', () => {
+      const result = generateR2Key('test', 'file', 'jp!g')
+      expect(result).toBe('articles/test/file.jpg')
     })
   })
 

@@ -17,6 +17,10 @@ export function sanitizeSlug(slug: string): string {
   return slug.replace(/[./\\]/g, '-').toLowerCase()
 }
 
+export function sanitizeExtension(extension: string): string {
+  return extension.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+}
+
 export function generateR2Key(
   articleSlug: string,
   resourceSlug: string,
@@ -24,7 +28,8 @@ export function generateR2Key(
 ): string {
   const sanitizedArticleSlug = sanitizeSlug(articleSlug)
   const sanitizedResourceSlug = sanitizeSlug(resourceSlug)
-  return `articles/${sanitizedArticleSlug}/${sanitizedResourceSlug}.${extension}`
+  const sanitizedExtension = sanitizeExtension(extension)
+  return `articles/${sanitizedArticleSlug}/${sanitizedResourceSlug}.${sanitizedExtension}`
 }
 
 export function generateCacheKey(
