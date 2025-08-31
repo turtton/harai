@@ -139,7 +139,6 @@ title: 記事タイトル
 description: 記事の概要
 tags: [tag1, tag2]
 published: true/false
-publishDate: 2024-01-01
 ---
 ```
 
