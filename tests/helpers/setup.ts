@@ -1,4 +1,5 @@
-import { beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach } from 'vitest'
+import '@testing-library/jest-dom'
 
 export function setupTestEnvironment() {
   beforeEach(async () => {

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { cn } from './utils'
 
 describe('utils', () => {
@@ -12,8 +12,9 @@ describe('utils', () => {
     })
 
     it('should handle conditional classes', () => {
-      expect(cn('base-class', true && 'conditional-class', false && 'hidden-class'))
-        .toBe('base-class conditional-class')
+      expect(cn('base-class', true && 'conditional-class', false && 'hidden-class')).toBe(
+        'base-class conditional-class'
+      )
     })
 
     it('should handle empty inputs', () => {
