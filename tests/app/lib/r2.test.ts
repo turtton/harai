@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { CloudflareR2Service } from '../../../app/lib/r2'
 import { R2Error, R2UploadError } from '../../../app/lib/r2-errors'
 
@@ -175,7 +175,9 @@ describe('r2', () => {
         mockR2Bucket.list.mockRejectedValue(originalError)
 
         await expect(service.list(prefix)).rejects.toThrow(R2Error)
-        await expect(service.list(prefix)).rejects.toThrow(`Failed to list objects with prefix: ${prefix}`)
+        await expect(service.list(prefix)).rejects.toThrow(
+          `Failed to list objects with prefix: ${prefix}`
+        )
       })
     })
 
@@ -189,7 +191,9 @@ describe('r2', () => {
         const result = await service.getSignedUrl(key)
 
         expect(result).toBe(expectedUrl)
-        expect(mockR2Bucket.createPresignedUrl).toHaveBeenCalledWith(key, 'GET', { expiresIn: 3600 })
+        expect(mockR2Bucket.createPresignedUrl).toHaveBeenCalledWith(key, 'GET', {
+          expiresIn: 3600,
+        })
       })
 
       it('should generate signed URL with custom expiration', async () => {
@@ -213,10 +217,14 @@ describe('r2', () => {
 
       it('should throw R2Error for invalid expiration', async () => {
         const key = 'test/file.jpg'
-        
+
         await expect(service.getSignedUrl(key, 0)).rejects.toThrow(R2Error)
-        await expect(service.getSignedUrl(key, 0)).rejects.toThrow('Expiration time must be positive')
-        await expect(service.getSignedUrl(key, -100)).rejects.toThrow('Expiration time must be positive')
+        await expect(service.getSignedUrl(key, 0)).rejects.toThrow(
+          'Expiration time must be positive'
+        )
+        await expect(service.getSignedUrl(key, -100)).rejects.toThrow(
+          'Expiration time must be positive'
+        )
       })
 
       it('should throw R2Error on failure', async () => {
@@ -226,7 +234,9 @@ describe('r2', () => {
         mockR2Bucket.createPresignedUrl.mockRejectedValue(originalError)
 
         await expect(service.getSignedUrl(key)).rejects.toThrow(R2Error)
-        await expect(service.getSignedUrl(key)).rejects.toThrow(`Failed to create signed URL for: ${key}`)
+        await expect(service.getSignedUrl(key)).rejects.toThrow(
+          `Failed to create signed URL for: ${key}`
+        )
       })
     })
   })

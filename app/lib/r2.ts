@@ -23,7 +23,7 @@ export class CloudflareR2Service implements R2Service {
     if (data.byteLength === 0) {
       throw new R2Error('Data cannot be empty', 'INVALID_DATA')
     }
-    
+
     try {
       await this.r2.put(key, data, {
         httpMetadata: contentType ? { contentType } : undefined,
@@ -37,7 +37,7 @@ export class CloudflareR2Service implements R2Service {
     if (!key || key.trim().length === 0) {
       throw new R2Error('Key cannot be empty', 'INVALID_KEY')
     }
-    
+
     try {
       return await this.r2.get(key)
     } catch (_error) {
@@ -49,7 +49,7 @@ export class CloudflareR2Service implements R2Service {
     if (!key || key.trim().length === 0) {
       throw new R2Error('Key cannot be empty', 'INVALID_KEY')
     }
-    
+
     try {
       await this.r2.delete(key)
     } catch (_error) {
@@ -72,7 +72,7 @@ export class CloudflareR2Service implements R2Service {
     if (expiresIn <= 0) {
       throw new R2Error('Expiration time must be positive', 'INVALID_EXPIRY')
     }
-    
+
     try {
       return await this.r2.createPresignedUrl(key, 'GET', { expiresIn })
     } catch (_error) {

@@ -5,7 +5,7 @@ describe('r2-errors', () => {
   describe('R2Error', () => {
     it('should create R2Error with message and code', () => {
       const error = new R2Error('Test error', 'TEST_CODE')
-      
+
       expect(error).toBeInstanceOf(Error)
       expect(error).toBeInstanceOf(R2Error)
       expect(error.message).toBe('Test error')
@@ -18,7 +18,7 @@ describe('r2-errors', () => {
     it('should create R2NotFoundError with correct message and code', () => {
       const key = 'test/missing-file.jpg'
       const error = new R2NotFoundError(key)
-      
+
       expect(error).toBeInstanceOf(Error)
       expect(error).toBeInstanceOf(R2Error)
       expect(error).toBeInstanceOf(R2NotFoundError)
@@ -31,7 +31,7 @@ describe('r2-errors', () => {
     it('should create R2UploadError with correct message and code', () => {
       const key = 'test/upload-file.jpg'
       const error = new R2UploadError(key)
-      
+
       expect(error).toBeInstanceOf(Error)
       expect(error).toBeInstanceOf(R2Error)
       expect(error).toBeInstanceOf(R2UploadError)
@@ -43,7 +43,7 @@ describe('r2-errors', () => {
       const key = 'test/upload-file.jpg'
       const originalError = new Error('Network error')
       const error = new R2UploadError(key, originalError)
-      
+
       expect(error.cause).toBe(originalError)
     })
   })

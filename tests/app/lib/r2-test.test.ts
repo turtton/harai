@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { testR2Connection } from '../../../app/lib/r2-test'
 
 // Mock R2Bucket
@@ -16,7 +16,7 @@ describe('r2-test', () => {
   describe('testR2Connection', () => {
     it('should return true when connection test succeeds', async () => {
       const mockObject = { key: 'test/connection-check', body: new ArrayBuffer(4) }
-      
+
       mockR2Bucket.put.mockResolvedValueOnce(undefined)
       mockR2Bucket.get.mockResolvedValueOnce(mockObject)
       mockR2Bucket.delete.mockResolvedValueOnce(undefined)

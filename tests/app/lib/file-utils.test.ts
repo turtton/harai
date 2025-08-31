@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest'
 import {
   ALLOWED_IMAGE_TYPES,
   ALLOWED_PDF_TYPE,
-  MAX_FILE_SIZE,
-  validateFileType,
-  validateFileSize,
-  sanitizeSlug,
-  sanitizeExtension,
-  generateR2Key,
   generateCacheKey,
+  generateR2Key,
+  MAX_FILE_SIZE,
+  sanitizeExtension,
+  sanitizeSlug,
+  validateFileSize,
+  validateFileType,
 } from '../../../app/lib/file-utils'
 
 describe('file-utils', () => {
