@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "lsmcp": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["-y", "@mizchi/lsmcp", "-p", "tsgo"],
+      "env": {}
+    }
+  }
+}
