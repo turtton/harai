@@ -9,12 +9,22 @@ export function validateFileType(contentType: string, type: 'image' | 'pdf'): bo
   return contentType === ALLOWED_PDF_TYPE
 }
 
+export function validateFileSize(size: number): boolean {
+  return size <= MAX_FILE_SIZE
+}
+
+export function sanitizeSlug(slug: string): string {
+  return slug.replace(/[./\\]/g, '-').toLowerCase()
+}
+
 export function generateR2Key(
   articleSlug: string,
   resourceSlug: string,
   extension: string
 ): string {
-  return `articles/${articleSlug}/${resourceSlug}.${extension}`
+  const sanitizedArticleSlug = sanitizeSlug(articleSlug)
+  const sanitizedResourceSlug = sanitizeSlug(resourceSlug)
+  return `articles/${sanitizedArticleSlug}/${sanitizedResourceSlug}.${extension}`
 }
 
 export function generateCacheKey(
