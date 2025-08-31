@@ -6,6 +6,18 @@
 - 全角と半角の間には半角スペースを入れること
 - 絵文字を使わないこと
 
+## Linter/Formatter
+
+このプロジェクトでは Biome を使用してコードの品質管理を行う:
+
+- **必須**: コード変更後は `bun run check` を実行する
+- **統合チェック**: `bun run check` (format + lint を書き込みあり)
+- **CI チェック**: `bun run ci` (format + lint をチェックのみ)
+
+個別実行が必要な場合:
+- **Format コマンド**: `bun run format` (書き込みあり)
+- **Lint コマンド**: `bun run lint` (チェックのみ)
+
 ## レビューについて
 
 - レビューはかなり厳しくすること
