@@ -25,7 +25,8 @@
         "noNonNullAssertion": "off"
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "warn",
+        "noUnknownAtRules": "off"
       }
     }
   },
