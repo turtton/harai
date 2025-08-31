@@ -11,13 +11,20 @@ on:
     #   - "src/**/*.jsx"
 
 jobs:
+  check-permission:
+    runs-on: ubuntu-latest
+    outputs:
+      has-write: ${{ steps.check.outputs.has-permission }}
+    steps:
+      - uses: shiguredo/github-actions/.github/actions/check-write-permission@main
+        id: check
+        with:
+          username: ${{ github.actor }}
+
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
-    
+    needs: check-permission
+    if: needs.check-permission.outputs.has-write == 'true'
+
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -50,5 +57,5 @@ jobs:
           
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.anthropic.com/en/docs/claude-code/sdk#command-line for available options
-          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
+          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)" --disallowed-tools Bash(git:*)'
 
