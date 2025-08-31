@@ -1,5 +1,5 @@
-import { createDrizzleClient } from '../client';
-import { articles, resources } from '../schema';
+import { createDrizzleClient } from '../client'
+import { articles, resources } from '../schema'
 
 // 開発用テストデータ
 const seedArticles = [
@@ -27,7 +27,7 @@ const seedArticles = [
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
   },
-];
+]
 
 const seedResources = [
   {
@@ -50,25 +50,25 @@ const seedResources = [
     size: 204800, // 200KB
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
   },
-];
+]
 
 // シードデータ投入関数
 export async function seedDevData(d1: D1Database) {
-  const db = createDrizzleClient(d1);
+  const db = createDrizzleClient(d1)
 
-  console.log('🌱 Seeding development data...');
+  console.log('🌱 Seeding development data...')
 
   // 既存データをクリア (開発環境のみ)
-  await db.delete(resources);
-  await db.delete(articles);
+  await db.delete(resources)
+  await db.delete(articles)
 
   // 記事データを投入
-  await db.insert(articles).values(seedArticles);
-  console.log('✅ Articles seeded');
+  await db.insert(articles).values(seedArticles)
+  console.log('✅ Articles seeded')
 
   // リソースデータを投入
-  await db.insert(resources).values(seedResources);
-  console.log('✅ Resources seeded');
+  await db.insert(resources).values(seedResources)
+  console.log('✅ Resources seeded')
 
-  console.log('🎉 Development data seeded successfully!');
+  console.log('🎉 Development data seeded successfully!')
 }

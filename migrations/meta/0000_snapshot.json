@@ -84,30 +84,22 @@
       "indexes": {
         "articles_slug_unique": {
           "name": "articles_slug_unique",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "isUnique": true
         },
         "idx_articles_slug": {
           "name": "idx_articles_slug",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "isUnique": false
         },
         "idx_articles_published": {
           "name": "idx_articles_published",
-          "columns": [
-            "published"
-          ],
+          "columns": ["published"],
           "isUnique": false
         },
         "idx_articles_publish_date": {
           "name": "idx_articles_publish_date",
-          "columns": [
-            "publish_date"
-          ],
+          "columns": ["publish_date"],
           "isUnique": false
         }
       },
@@ -166,19 +158,12 @@
       "indexes": {
         "idx_image_cache_original": {
           "name": "idx_image_cache_original",
-          "columns": [
-            "original_r2_key"
-          ],
+          "columns": ["original_r2_key"],
           "isUnique": false
         },
         "pk_image_cache": {
           "name": "pk_image_cache",
-          "columns": [
-            "original_r2_key",
-            "width",
-            "height",
-            "format"
-          ],
+          "columns": ["original_r2_key", "width", "height", "format"],
           "isUnique": false
         }
       },
@@ -251,24 +236,17 @@
       "indexes": {
         "idx_resources_article_id": {
           "name": "idx_resources_article_id",
-          "columns": [
-            "article_id"
-          ],
+          "columns": ["article_id"],
           "isUnique": false
         },
         "idx_resources_r2_key": {
           "name": "idx_resources_r2_key",
-          "columns": [
-            "r2_key"
-          ],
+          "columns": ["r2_key"],
           "isUnique": false
         },
         "idx_resources_article_slug": {
           "name": "idx_resources_article_slug",
-          "columns": [
-            "article_id",
-            "slug"
-          ],
+          "columns": ["article_id", "slug"],
           "isUnique": false
         }
       },
@@ -277,12 +255,8 @@
           "name": "resources_article_id_articles_id_fk",
           "tableFrom": "resources",
           "tableTo": "articles",
-          "columnsFrom": [
-            "article_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["article_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
