@@ -21,14 +21,15 @@
       "binding": "R2",
       "bucket_name": "harai-blog-assets"
     }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "harai-blog",
+      "database_id": "5e6b7c1a-49c0-4433-8eec-f1d533a90f53",
+      "migrations_dir": "migrations"
+    }
   ]
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
   // "ai": {
   //   "binding": "AI"
   // }

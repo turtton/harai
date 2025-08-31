@@ -36,5 +36,8 @@ lerna-debug.log*
 .DS_Store
 WORK_INSTRUCTIONS.md
 
+# test coverage
+coverage/
+
 # lsmcp cache
 .lsmcp/cache

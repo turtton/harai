@@ -21,6 +21,7 @@ Cloudflareエコシステムで完結する、Markdown記事とPDFスライド�
 - **フレームワーク**: HonoX
 - **実行環境**: Cloudflare Workers
 - **データベース**: Cloudflare D1
+- **ORM**: Drizzle ORM
 - **ファイルストレージ**: Cloudflare R2
 - **スタイリング**: Tailwind CSS
 - **UIコンポーネント**: shadcn/ui
@@ -65,8 +66,12 @@ wrangler secret put DEPLOY_TOKEN
 ### データベースマイグレーション
 
 ```bash
-# スキーマを適用
-wrangler d1 execute harai-blog --file=./schema.sql
+# マイグレーション実行
+wrangler d1 migrations apply harai-blog --local  # ローカル環境
+wrangler d1 migrations apply harai-blog --remote # 本番環境
+
+# シードデータ投入
+wrangler d1 execute harai-blog --local --file=db/seeds/dev_data.sql
 ```
 
 ## 開発
@@ -142,6 +147,31 @@ published: true
 
 ### image_cache テーブル
 リサイズ済み画像のキャッシュ情報
+
+## Drizzle ORM 使用方法
+
+```typescript
+import { createDrizzleClient } from './db/client';
+import { DatabaseOperations } from './db/operations';
+
+// データベースクライアント作成
+const db = createDrizzleClient(env.DB);
+const dbOps = new DatabaseOperations(db);
+
+// 記事を取得
+const articles = await dbOps.articles.getPublishedArticles();
+const article = await dbOps.articles.getArticleBySlug('hello-world');
+
+// リソースを取得
+const resources = await dbOps.resources.getResourcesByArticleId(articleId);
+```
+
+### API エンドポイント
+
+- `GET /api/articles` - 公開記事一覧
+- `GET /api/articles/:slug` - 特定記事の取得  
+- `GET /api/resources` - リソース一覧
+- `GET /api/images/:key` - 画像キャッシュ処理
 
 ## ライセンス
 
