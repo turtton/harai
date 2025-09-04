@@ -18,7 +18,7 @@ export default createRoute(async (c) => {
     ])
 
     return c.render(
-      <div className='min-h-screen bg-background'>
+      <div className='h-screen bg-background flex flex-col'>
         <title>ブログ - 記事一覧</title>
         <meta name='description' content='技術記事とPDFスライドを配信するブログサイト' />
 
@@ -34,15 +34,17 @@ export default createRoute(async (c) => {
         </header>
 
         {/* メインコンテンツ */}
-        <main className='container py-8'>
-          <div className='space-y-8'>
-            <div className='space-y-2'>
+        <main className='container py-8 flex-1 min-h-0'>
+          <div className='h-full flex flex-col space-y-8'>
+            <div className='space-y-2 flex-shrink-0'>
               <h1 className='text-3xl font-bold tracking-tight'>記事一覧</h1>
               <p className='text-muted-foreground'>技術記事と PDF スライドを配信するブログ</p>
             </div>
 
-            {/* 記事一覧コンポーネント */}
-            <ArticleList initialArticles={initialArticles as Article[]} initialTags={allTags} />
+            {/* 記事一覧コンポーネント（残りの高さを占有） */}
+            <div className='flex-1 min-h-0'>
+              <ArticleList initialArticles={initialArticles as Article[]} initialTags={allTags} />
+            </div>
           </div>
         </main>
 
