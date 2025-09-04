@@ -1,5 +1,5 @@
 import { createRoute } from 'honox/factory'
-import type { Article } from '@/lib/types'
+import { dbArticleToArticle } from '@/lib/types'
 import { createDrizzleClient } from '../../db/client'
 import { logError } from '../../db/logger'
 import { DatabaseOperations } from '../../db/operations'
@@ -43,7 +43,10 @@ export default createRoute(async (c) => {
 
             {/* 記事一覧コンポーネント（残りの高さを占有） */}
             <div className='flex-1 min-h-0'>
-              <ArticleList initialArticles={initialArticles as Article[]} initialTags={allTags} />
+              <ArticleList
+                initialArticles={initialArticles.map(dbArticleToArticle)}
+                initialTags={allTags}
+              />
             </div>
           </div>
         </main>
