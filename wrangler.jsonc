@@ -3,10 +3,11 @@
   "name": "harai",
   "main": "./dist/index.js",
   "compatibility_date": "2025-08-31",
-  "compatibility_flags": ["nodejs_compat"],
+  //  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist"
   },
+
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },

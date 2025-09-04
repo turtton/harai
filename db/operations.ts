@@ -91,13 +91,44 @@ export class ArticleOperations {
     // SQLインジェクション対策: LIKE特殊文字をエスケープしてパラメータ化
     const escapedQuery = query.replace(/[%_\\]/g, '\\$&')
     const searchPattern = `%${escapedQuery}%`
-    return await this.db
+    return this.db
       .select()
       .from(articles)
       .where(
         and(eq(articles.published, true), sql`${articles.title} LIKE ${searchPattern} ESCAPE '\\'`)
       )
       .orderBy(desc(articles.publishDate))
+  }
+
+  // 公開記事から全タグを取得（重複除去、使用頻度順）
+  async getAllTags() {
+    const publishedArticles = await this.db
+      .select({ tags: articles.tags })
+      .from(articles)
+      .where(eq(articles.published, true))
+
+    const tagCounts = new Map<string, number>()
+
+    for (const article of publishedArticles) {
+      if (article.tags) {
+        try {
+          const tags = JSON.parse(article.tags) as string[]
+          for (const tag of tags) {
+            if (tag.trim()) {
+              const count = tagCounts.get(tag) || 0
+              tagCounts.set(tag, count + 1)
+            }
+          }
+        } catch {
+          // JSON パースエラーの場合はスキップ
+        }
+      }
+    }
+
+    // 使用頻度順（降順）でソートしてタグ名のみを返す
+    return Array.from(tagCounts.entries())
+      .sort(([, a], [, b]) => b - a)
+      .map(([tag]) => tag)
   }
 }
 
