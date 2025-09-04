@@ -91,13 +91,13 @@ export class ArticleOperations {
     // SQLインジェクション対策: LIKE特殊文字をエスケープしてパラメータ化
     const escapedQuery = query.replace(/[%_\\]/g, '\\$&')
     const searchPattern = `%${escapedQuery}%`
-    return await this.db
-      .select()
-      .from(articles)
-      .where(
-        and(eq(articles.published, true), sql`${articles.title} LIKE ${searchPattern} ESCAPE '\\'`)
-      )
-      .orderBy(desc(articles.publishDate))
+    return this.db
+        .select()
+        .from(articles)
+        .where(
+            and(eq(articles.published, true), sql`${articles.title} LIKE ${searchPattern} ESCAPE '\\'`)
+        )
+        .orderBy(desc(articles.publishDate));
   }
 
   // 公開記事から全タグを取得（重複除去、使用頻度順）
