@@ -4,6 +4,7 @@ declare module 'hono' {
   interface Env {
     Variables: Record<string, unknown>
     Bindings: {
+      DB: D1Database
       R2: R2Bucket
     }
   }
