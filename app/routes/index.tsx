@@ -1,9 +1,9 @@
 import { createRoute } from 'honox/factory'
+import type { Article } from '@/lib/types'
 import { createDrizzleClient } from '../../db/client'
 import { logError } from '../../db/logger'
 import { DatabaseOperations } from '../../db/operations'
 import ArticleList from '../islands/article-list'
-import type { Article } from '@/lib/types'
 
 export default createRoute(async (c) => {
   try {

@@ -92,12 +92,12 @@ export class ArticleOperations {
     const escapedQuery = query.replace(/[%_\\]/g, '\\$&')
     const searchPattern = `%${escapedQuery}%`
     return this.db
-        .select()
-        .from(articles)
-        .where(
-            and(eq(articles.published, true), sql`${articles.title} LIKE ${searchPattern} ESCAPE '\\'`)
-        )
-        .orderBy(desc(articles.publishDate));
+      .select()
+      .from(articles)
+      .where(
+        and(eq(articles.published, true), sql`${articles.title} LIKE ${searchPattern} ESCAPE '\\'`)
+      )
+      .orderBy(desc(articles.publishDate))
   }
 
   // 公開記事から全タグを取得（重複除去、使用頻度順）
