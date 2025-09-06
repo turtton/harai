@@ -14,6 +14,7 @@ dist/
 .idea/shelf
 .direnv
 coverage
+.astro
 
 # deps
 node_modules/

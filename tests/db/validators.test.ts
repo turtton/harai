@@ -5,7 +5,7 @@ import {
   imageCacheCreateSchema,
   imageQuerySchema,
   resourceParamsSchema,
-} from '../../db/validators'
+} from '@/db/validators'
 
 describe('Validators', () => {
   describe('articleQuerySchema', () => {
