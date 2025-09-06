@@ -64,10 +64,10 @@ export const $articleCount = computed($filteredArticles, (articles) => articles.
 
 // アクション関数
 export const articleActions = {
-  setInitialData(articles: Article[], tags: string[]) {
+  setInitialData(articles: Article[], initialArticleMaxCount: number, tags: string[]) {
     $allArticles.set(articles)
     $availableTags.set(tags)
-    $hasMore.set(articles.length >= 5)
+    $hasMore.set(articles.length >= initialArticleMaxCount)
   },
 
   setLoading(loading: boolean) {

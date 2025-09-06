@@ -15,6 +15,7 @@ import {
 
 interface ArticleGridProps {
   initialArticles: Article[]
+  initialArticleMaxCount: number
   initialTags: string[]
 }
 
@@ -36,7 +37,11 @@ const formatDate = (dateString: string | null) => {
   })
 }
 
-export default function ArticleGrid({ initialArticles, initialTags }: ArticleGridProps) {
+export default function ArticleGrid({
+  initialArticles,
+  initialArticleMaxCount,
+  initialTags,
+}: ArticleGridProps) {
   const filteredArticles = useStore($filteredArticles)
   const loading = useStore($loading)
   const error = useStore($error)
@@ -45,7 +50,7 @@ export default function ArticleGrid({ initialArticles, initialTags }: ArticleGri
   useEffect(() => {
     // 初期データを設定（一度だけ）
     if (initialArticles.length > 0) {
-      articleActions.setInitialData(initialArticles, initialTags)
+      articleActions.setInitialData(initialArticles, initialArticleMaxCount, initialTags)
     }
   }, [initialArticles, initialTags])
 
