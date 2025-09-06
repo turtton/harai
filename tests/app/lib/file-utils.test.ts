@@ -9,7 +9,7 @@ import {
   sanitizeSlug,
   validateFileSize,
   validateFileType,
-} from '../../../app/lib/file-utils'
+} from '@/lib/file-utils.ts'
 
 describe('file-utils', () => {
   describe('validateFileType', () => {

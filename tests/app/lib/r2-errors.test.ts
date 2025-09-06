@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { R2Error, R2NotFoundError, R2UploadError } from '../../../app/lib/r2-errors'
+import { R2Error, R2NotFoundError, R2UploadError } from '@/lib/r2-errors.ts'
 
 describe('r2-errors', () => {
   describe('R2Error', () => {

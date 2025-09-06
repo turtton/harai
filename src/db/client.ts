@@ -12,4 +12,5 @@ export function createDrizzleClient(d1: D1Database): Database {
 // 環境変数から型定義
 export interface Env {
   DB: D1Database
+  R2: R2Bucket
 }
