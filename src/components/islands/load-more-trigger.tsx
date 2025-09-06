@@ -25,23 +25,25 @@ export default function LoadMoreTrigger() {
   const loadMoreArticles = useCallback(async () => {
     if (loading || !hasMore) return
 
+    // 検索やフィルタが適用されている場合は追加読み込みを停止
+    const hasActiveFilters = selectedTags.length > 0 || searchQuery.trim()
+    if (hasActiveFilters) return
+
     const params: ArticleSearchParams = {
       limit: 10,
       offset: allArticles.length,
     }
 
-    // 検索クエリがある場合のみサーバー側で検索を実行
-    // タグフィルタはクライアント側で処理
-    if (searchQuery) {
-      params.search = searchQuery
-    }
-
     await articleActions.fetchArticles(params, false)
-  }, [loading, hasMore, allArticles.length, searchQuery])
+  }, [loading, hasMore, allArticles.length, searchQuery, selectedTags])
 
   // 無限スクロールの設定
   useEffect(() => {
     if (!hasMore || loading) return
+
+    // フィルタが適用されている場合は無限スクロールを無効化
+    const hasActiveFilters = selectedTags.length > 0 || searchQuery.trim()
+    if (hasActiveFilters) return
 
     if (observerRef.current) {
       observerRef.current.disconnect()
@@ -66,7 +68,7 @@ export default function LoadMoreTrigger() {
         observerRef.current.disconnect()
       }
     }
-  }, [hasMore, loading, loadMoreArticles])
+  }, [hasMore, loading, selectedTags, searchQuery, loadMoreArticles])
 
   // フィルタ適用時は無限スクロールを無効化
   const hasActiveFilters = selectedTags.length > 0 || searchQuery.trim()

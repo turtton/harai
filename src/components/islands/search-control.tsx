@@ -12,6 +12,11 @@ export default function SearchControl({ placeholder = '記事を検索...' }: Se
   const searchQuery = useStore($searchQuery)
   const [localQuery, setLocalQuery] = useState(searchQuery)
 
+  // 外部から searchQuery が変更された場合の同期
+  useEffect(() => {
+    setLocalQuery(searchQuery)
+  }, [searchQuery])
+
   // デバウンス処理 - 500ms 待機後に検索実行
   useEffect(() => {
     const timer = setTimeout(() => {
