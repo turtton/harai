@@ -8,7 +8,6 @@ import {
   $hasMore,
   $loading,
   $searchQuery,
-  $selectedTags,
   articleActions,
 } from '@/stores/article-store'
 
@@ -17,7 +16,6 @@ export default function LoadMoreTrigger() {
   const hasMore = useStore($hasMore)
   const loading = useStore($loading)
   const searchQuery = useStore($searchQuery)
-  const selectedTags = useStore($selectedTags)
 
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
@@ -25,25 +23,23 @@ export default function LoadMoreTrigger() {
   const loadMoreArticles = useCallback(async () => {
     if (loading || !hasMore) return
 
-    // 検索やフィルタが適用されている場合は追加読み込みを停止
-    const hasActiveFilters = selectedTags.length > 0 || searchQuery.trim()
-    if (hasActiveFilters) return
-
     const params: ArticleSearchParams = {
       limit: 10,
       offset: allArticles.length,
     }
 
+    // 検索クエリがある場合はサーバー側で検索実行
+    if (searchQuery.trim()) {
+      params.search = searchQuery
+    }
+
+    // タグフィルタはクライアント側で処理するため、サーバー側パラメータには含めない
     await articleActions.fetchArticles(params, false)
-  }, [loading, hasMore, allArticles.length, searchQuery, selectedTags])
+  }, [loading, hasMore, allArticles.length, searchQuery])
 
   // 無限スクロールの設定
   useEffect(() => {
     if (!hasMore || loading) return
-
-    // フィルタが適用されている場合は無限スクロールを無効化
-    const hasActiveFilters = selectedTags.length > 0 || searchQuery.trim()
-    if (hasActiveFilters) return
 
     if (observerRef.current) {
       observerRef.current.disconnect()
@@ -53,7 +49,7 @@ export default function LoadMoreTrigger() {
       (entries) => {
         const [entry] = entries
         if (entry.isIntersecting && hasMore && !loading) {
-          loadMoreArticles()
+          void loadMoreArticles()
         }
       },
       { threshold: 0.1 }
@@ -68,13 +64,10 @@ export default function LoadMoreTrigger() {
         observerRef.current.disconnect()
       }
     }
-  }, [hasMore, loading, selectedTags, searchQuery, loadMoreArticles])
+  }, [hasMore, loading, loadMoreArticles])
 
-  // フィルタ適用時は無限スクロールを無効化
-  const hasActiveFilters = selectedTags.length > 0 || searchQuery.trim()
-
-  // フィルタ適用時、または記事がない場合は何も表示しない
-  if (hasActiveFilters || allArticles.length === 0) {
+  // 記事がない場合は何も表示しない
+  if (allArticles.length === 0) {
     return null
   }
 
@@ -86,16 +79,6 @@ export default function LoadMoreTrigger() {
           <Button variant='outline' className='gap-2' disabled>
             <ChevronDown className='h-4 w-4' />
             スクロールして続きを読み込み
-          </Button>
-        </div>
-      )}
-
-      {/* 手動読み込みボタン（フォールバック） */}
-      {hasMore && !loading && (
-        <div className='flex justify-center py-4'>
-          <Button variant='outline' onClick={loadMoreArticles} className='gap-2'>
-            <ChevronDown className='h-4 w-4' />
-            続きを読み込み
           </Button>
         </div>
       )}
