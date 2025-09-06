@@ -7,7 +7,7 @@
     "strict": true,
     "skipLibCheck": true,
     "lib": ["ESNext", "DOM"],
-    "types": ["astro/client", "@cloudflare/workers-types/2023-07-01"],
+    "types": ["astro/client", "./worker-configuration.d.ts"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
