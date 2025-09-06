@@ -1,13 +1,16 @@
 ---
 import '@/styles/global.css'
-import ArticleList from '../components/islands/article-list'
+import ArticleGrid from '../components/islands/article-grid'
+import LoadMoreTrigger from '../components/islands/load-more-trigger'
+import SearchControl from '../components/islands/search-control'
+import TagFilterControl from '../components/islands/tag-filter-control'
 import { createDrizzleClient } from '../db/client'
 import { logError } from '../db/logger'
 import { DatabaseOperations } from '../db/operations'
 import { dbArticleToArticle } from '../lib/types'
 import { type AstroLocals, getCloudflareEnv } from '../types/astro'
 
-// SSR でデータを取得
+// SSR で初期データのみ取得（軽量化）
 let initialArticles = []
 let allTags = []
 let hasError = false
@@ -19,9 +22,9 @@ try {
   const db = createDrizzleClient(env.DB)
   const dbOps = new DatabaseOperations(db)
 
-  // 初期記事データ (10件) とタグ一覧を並行取得
+  // 初期記事データ (5件のみ) とタグ一覧を並行取得
   const [articlesData, tagsData] = await Promise.all([
-    dbOps.articles.getPublishedArticles(10, 0),
+    dbOps.articles.getPublishedArticles(5, 0),
     dbOps.articles.getAllTags(),
   ])
 
@@ -89,13 +92,33 @@ try {
                 </p>
               </div>
 
-              {/* 記事一覧コンポーネント（残りの高さを占有） */}
+              {/* 記事管理 - nanostore による状態共有 */}
               <div class="flex-1 min-h-0">
-                <ArticleList
-                  client:load
-                  initialArticles={initialArticles}
-                  initialTags={allTags}
-                />
+                <div class="flex flex-col md:flex-row gap-4 md:gap-8 h-full min-h-0">
+                  {/* 左サイドバー（固定） - モバイルでは上に表示 */}
+                  <div class="w-full md:w-80 md:flex-shrink-0 space-y-3 md:space-y-6 flex-shrink-0">
+                    {/* 検索コントロール（遅延読み込み） */}
+                    <SearchControl client:idle />
+
+                    {/* タグフィルターコントロール（遅延読み込み） */}
+                    <TagFilterControl client:idle />
+                  </div>
+
+                  {/* 右側記事一覧エリア（スクロール可能） */}
+                  <div class="flex-1 min-h-0 overflow-auto">
+                    <div class="space-y-6">
+                      {/* 記事グリッド（即座に表示、初期データ付き） */}
+                      <ArticleGrid
+                        client:load
+                        initialArticles={initialArticles}
+                        initialTags={allTags}
+                      />
+
+                      {/* 無限スクロールトリガー（画面に入ったら読み込み） */}
+                      <LoadMoreTrigger client:visible />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </main>
