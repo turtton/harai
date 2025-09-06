@@ -1,33 +1,34 @@
 # Harai
 
-HonoX + Cloudflare WorkersによるMarkdownブログサイト
+Astro + Hono による Markdown ブログサイト
 
 ## 概要
 
-Cloudflareエコシステムで完結する、Markdown記事とPDFスライドに対応したブログサイトです。記事管理とサイトデプロイが分離された構成で、外部APIを通じた動的な記事更新に対応しています。
+Cloudflare エコシステムで完結する Markdown ベースのブログサイトです。Astro の静的サイト生成機能と Hono の API ルーティングを組み合わせ、記事管理とサイトデプロイが分離された構成で、外部 API を通じた動的な記事更新に対応しています。
 
 ## 特徴
 
-- 📝 Markdown記事の公開・管理
-- 📊 PDFスライドの埋め込み表示
-- 🔍 記事検索・タグフィルタリング
-- 🖼️ 動的画像リサイズ・最適化
-- 🌐 OGP画像の自動生成
-- 🚀 Cloudflare Workers上での高速動作
-- 📱 レスポンシブデザイン対応
+- Markdown 記事の公開・管理
+- 記事検索・タグフィルタリング
+- 動的画像リサイズ・最適化
+- Cloudflare Workers 上での高速動作
+- レスポンシブデザイン対応
 
 ## 技術スタック
 
-- **フレームワーク**: HonoX
-- **実行環境**: Cloudflare Workers
-- **データベース**: Cloudflare D1
-- **ORM**: Drizzle ORM
-- **ファイルストレージ**: Cloudflare R2
-- **スタイリング**: Tailwind CSS
-- **UIコンポーネント**: shadcn/ui
-- **Markdownパーサー**: marked + Shiki
-- **PDFビューワー**: PDF.js
-- **パッケージマネージャー**: Bun
+- **Runtime**: Cloudflare Workers with Node.js compatibility
+- **Frontend Framework**: Astro v5 with React integration
+- **API Framework**: Hono v4 for API routing
+- **Database**: Cloudflare D1 (SQLite-compatible) with Drizzle ORM
+- **Storage**: Cloudflare R2 (S3-compatible object storage)
+- **Styling**: Tailwind CSS v4 with Vite plugin
+- **UI Components**: Radix UI with shadcn/ui integration
+- **Icons**: Lucide React
+- **Validation**: Zod for schema validation
+- **Build**: Vite with Astro Cloudflare adapter
+- **Package Manager**: Bun
+- **Testing**: Vitest with Testing Library
+- **Development Environment**: Nix flake with wrangler
 
 ## セットアップ
 
@@ -74,35 +75,63 @@ wrangler d1 migrations apply harai-blog --remote # 本番環境
 wrangler d1 execute harai-blog --local --file=db/seeds/dev_data.sql
 ```
 
-## 開発
+## 開発コマンド
 
 ```bash
-# 開発サーバー起動
+# 開発サーバー起動 (Astro development server with hot reload, port 4321)
 bun run dev
 
-# ビルド
+# プロダクション用ビルド (Astro SSR build)
 bun run build
 
-# プレビュー（Wrangler使用）
+# ローカルプレビュー (Wrangler 使用)
 bun run preview
 
-# デプロイ
+# デプロイ (Build and deploy to Cloudflare Workers)
 bun run deploy
+
+# ステージング環境へのデプロイ
+bun run deploy:staging
+
+# プロダクション環境へのデプロイ
+bun run deploy:production
+
+# コード品質管理・テスト
+bun run check       # コード品質チェック
+bun run test        # テスト実行
 ```
 
-## API仕様
+## アーキテクチャ
+
+### ブログシステムアーキテクチャ
+記事管理とサイトデプロイが分離された構成:
+- **コンテンツフロー**: [記事リポジトリ] → [GitHub Actions] → [ブログ API] → [D1/R2] → [ブログ表示]
+- **データ永続化**: Cloudflare D1 でメタデータ、R2 でアセット
+- **コンテンツ更新**: 外部 API 駆動、管理画面なし
+
+### Astro + Hono アプリケーション構造
+- **Pages**: `src/pages/` ディレクトリに配置
+  - `index.astro` - 記事一覧と検索機能付きホームページ
+  - `api/[...route].ts` - Hono を使用したキャッチオール API ルートハンドラー
+    - `/api/articles` - ページネーション、検索、タグフィルタリング付き記事一覧
+    - `/api/articles/:slug` - 個別記事取得
+    - `/api/tags` - タグ一覧
+    - `/api/resources/:key` - R2 ストレージからのアセット配信
+
+- **Islands**: インタラクティブなクライアントコンポーネント
+- **Components**: 再利用可能な UI コンポーネント
+
+## API エンドポイント
 
 ### 公開エンドポイント
-
-- `GET /` - 記事一覧（トップページ）
-- `GET /posts/[slug]` - 記事詳細ページ
-- `GET /api/search` - 記事検索API
-- `GET /api/resources/[r2_key]` - リソース配信
-- `GET /og/[slug]` - OGP画像生成
+- `GET /` - 記事一覧と検索機能付きホームページ
+- `GET /api/articles` - ページネーション、検索、タグフィルタリング付き記事一覧
+- `GET /api/articles/:slug` - 個別記事取得
+- `GET /api/tags` - タグ管理
+- `GET /api/resources/:key` - キャッシュ付きアセット配信
 
 ### 管理エンドポイント
-
-- `POST /api/deploy` - 記事デプロイ用Webhook（要認証）
+- デプロイ API: コンテンツ更新には `X-Deploy-Token` ヘッダーが必要
 
 ## 記事の書き方
 
@@ -122,56 +151,31 @@ published: true
 ### リソース参照
 
 - 画像: `![代替テキスト](リソースslug)`
-- PDF: `![PDFタイトル](リソースslug)`
+- その他アセット: R2 ストレージ経由でアクセス
 
-## アーキテクチャ
-
-```
-[記事リポジトリ] → [GitHub Actions] → [ブログサイトAPI] → [D1/R2]
-                                              ↓
-                                    [ブログサイト表示]
-```
-
-- **記事管理**: 外部リポジトリでMarkdownファイルを管理
-- **自動デプロイ**: GitHub Actionsで記事とアセットを収集・API経由でアップロード
-- **表示**: HonoXアプリケーションでD1からデータを取得して表示
-- **アセット配信**: R2からの動的リサイズ・配信
-
-## データベース設計
+## データベース設計 (Drizzle ORM)
 
 ### articles テーブル
-記事のメタデータとMarkdown本文を格納
+- `id` (TEXT PRIMARY KEY) - UUID
+- `slug` (TEXT UNIQUE) - URL 識別子
+- `title`, `description`, `content` - 記事メタデータと Markdown コンテンツ
+- `tags` (TEXT) - JSON 配列のタグ
+- `published` (BOOLEAN), `publish_date` - 公開制御
+- `created_at`, `updated_at` - タイムスタンプ
 
-### resources テーブル  
-記事に関連するアセット（画像・PDF）の管理
+### resources テーブル
+- 記事と R2 保存アセット（画像、PDF）をリンク
+- 元のファイル名とメタデータを追跡
 
 ### image_cache テーブル
-リサイズ済み画像のキャッシュ情報
+- パフォーマンス最適化のためのリサイズ済み画像キャッシュ
 
-## Drizzle ORM 使用方法
+## 主要機能
 
-```typescript
-import { createDrizzleClient } from './db/client';
-import { DatabaseOperations } from './db/operations';
-
-// データベースクライアント作成
-const db = createDrizzleClient(env.DB);
-const dbOps = new DatabaseOperations(db);
-
-// 記事を取得
-const articles = await dbOps.articles.getPublishedArticles();
-const article = await dbOps.articles.getArticleBySlug('hello-world');
-
-// リソースを取得
-const resources = await dbOps.resources.getResourcesByArticleId(articleId);
-```
-
-### API エンドポイント
-
-- `GET /api/articles` - 公開記事一覧
-- `GET /api/articles/:slug` - 特定記事の取得  
-- `GET /api/resources` - リソース一覧
-- `GET /api/images/:key` - 画像キャッシュ処理
+- Markdown ブログ記事の管理・表示
+- 記事検索・タグフィルタリング
+- 画像・アセットの動的配信
+- 型安全な API エンドポイント
 
 ## ライセンス
 
