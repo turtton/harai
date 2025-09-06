@@ -1,4 +1,5 @@
 import { atom, computed } from 'nanostores'
+import { apiClient } from '@/lib/api-client'
 import type { Article, ArticleSearchParams, ArticlesResponse } from '@/lib/types'
 
 export interface ArticleState {
@@ -113,19 +114,20 @@ export const articleActions = {
     articleActions.setError(null)
 
     try {
-      const queryParams = new URLSearchParams()
-      if (params.limit) queryParams.append('limit', params.limit.toString())
-      if (params.offset) queryParams.append('offset', params.offset.toString())
-      if (params.search) queryParams.append('search', params.search)
-      if (params.tag) queryParams.append('tag', params.tag)
-
-      const response = await fetch(`/api/articles?${queryParams}`)
+      const response = await apiClient.articles.$get({
+        query: {
+          ...(params.limit && { limit: params.limit.toString() }),
+          ...(params.offset && { offset: params.offset.toString() }),
+          ...(params.search && { search: params.search }),
+          ...(params.tag && { tag: params.tag }),
+        },
+      })
 
       if (!response.ok) {
         throw new Error('記事の取得に失敗しました')
       }
 
-      const data: ArticlesResponse = await response.json()
+      const data = (await response.json()) as ArticlesResponse
 
       if (replace) {
         articleActions.replaceArticles(data.data)
