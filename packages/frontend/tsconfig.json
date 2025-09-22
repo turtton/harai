@@ -7,12 +7,13 @@
     "strict": true,
     "skipLibCheck": true,
     "lib": ["ESNext", "DOM"],
-    "types": ["astro/client"],
+    "types": ["astro/client", "./worker-configuration.d.ts"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "references": [{ "path": "../backend" }]
 }

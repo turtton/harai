@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { cp, rm, mkdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
+import { cp, mkdir, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -33,7 +33,6 @@ async function copyFrontendAssets() {
     // Frontend の成果物を assets にコピー
     await cp(frontendDistPath, backendAssetsPath, { recursive: true })
     console.log('✅ Frontend assets copied to backend/assets')
-
   } catch (error) {
     console.error('❌ Error copying frontend assets:', error)
     process.exit(1)

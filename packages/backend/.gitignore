@@ -2,3 +2,5 @@ assets/**/*.css
 assets/*.html
 assets/*.ico
 assets/**/*.js
+.wrangler
+node_modules

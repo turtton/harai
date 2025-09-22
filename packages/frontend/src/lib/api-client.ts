@@ -1,4 +1,4 @@
-import type { App } from 'backend/types'
+import type { App } from '@harai/backend/types'
 import { hc } from 'hono/client'
 
 // 型安全なAPIクライアント

@@ -155,7 +155,7 @@ export const articleActions = {
         throw new Error('タグの取得に失敗しました')
       }
       const data = await response.json()
-      if (data.success && Array.isArray(data.data)) {
+      if (data && data.success && Array.isArray(data.data)) {
         $availableTags.set(data.data)
       }
     } catch (err) {

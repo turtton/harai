@@ -52,8 +52,8 @@ export class AuthorizationError extends Error {
 export function getErrorResponse(error: unknown) {
   if (error instanceof ValidationError) {
     return {
-      status: 400,
-      success: false,
+      status: 400 as const,
+      success: false as const,
       error: error.message,
       field: error.field,
       code: error.code,
@@ -62,8 +62,8 @@ export function getErrorResponse(error: unknown) {
 
   if (error instanceof NotFoundError) {
     return {
-      status: 404,
-      success: false,
+      status: 404 as const,
+      success: false as const,
       error: error.message,
       resource: error.resource,
       identifier: error.identifier,
@@ -72,24 +72,24 @@ export function getErrorResponse(error: unknown) {
 
   if (error instanceof AuthenticationError) {
     return {
-      status: 401,
-      success: false,
+      status: 401 as const,
+      success: false as const,
       error: error.message,
     }
   }
 
   if (error instanceof AuthorizationError) {
     return {
-      status: 403,
-      success: false,
+      status: 403 as const,
+      success: false as const,
       error: error.message,
     }
   }
 
   if (error instanceof DatabaseError) {
     return {
-      status: 500,
-      success: false,
+      status: 500 as const,
+      success: false as const,
       error: 'Database operation failed',
       operation: error.operation,
     }
@@ -97,8 +97,8 @@ export function getErrorResponse(error: unknown) {
 
   // 予期しないエラー
   return {
-    status: 500,
-    success: false,
+    status: 500 as const,
+    success: false as const,
     error: 'Internal server error',
   }
 }

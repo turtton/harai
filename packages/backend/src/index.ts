@@ -184,10 +184,8 @@ const api = new Hono<{ Bindings: Env }>()
         new DatabaseError('Failed to fetch tags', 'getAllTags', error)
       )
 
-      return new Response(JSON.stringify(errorResponse), {
-        status: errorResponse.status,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      c.status(errorResponse.status)
+      return c.json(errorResponse)
     }
   })
   // リソース取得（画像リサイズ等）

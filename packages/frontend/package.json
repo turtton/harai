@@ -6,14 +6,14 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "biome lint src/",
-    "format": "prettier -w **/*.astro && biome format --write src/",
-    "check": "prettier -c **/*.astro && biome check --write src/",
-    "ci": "biome check src/",
+    "lint": "biome lint",
+    "format": "prettier -w **/*.astro && biome format --write",
+    "check": "prettier -c **/*.astro && biome check --write",
+    "ci": "biome check",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --build"
   },
   "dependencies": {
     "@astrojs/react": "^4.3.0",
@@ -35,7 +35,7 @@
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
-    "backend": "workspace:*",
+    "@harai/backend": "workspace:*",
     "happy-dom": "^14.0.0",
     "shadcn": "^3.0.0",
     "tailwindcss": "^4.0.9",

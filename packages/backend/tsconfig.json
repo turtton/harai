@@ -6,13 +6,14 @@
     "strict": true,
     "skipLibCheck": true,
     "lib": ["ESNext"],
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
+    "declaration": true,
+    "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
     "types": ["./worker-configuration.d.ts"],
+    "composite": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
