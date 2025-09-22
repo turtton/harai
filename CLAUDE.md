@@ -34,18 +34,57 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Astro blog application with Hono API backend for Cloudflare Workers. The system combines Astro's static site generation capabilities with Hono's API routing, designed as a Markdown-based blog using Cloudflare's ecosystem (D1, R2, Workers) for complete infrastructure.
+This is a monorepo Astro + Hono blog application for Cloudflare Workers. The system is structured as a Bun workspace with separated Frontend (Astro) and Backend (Hono) packages, where a single Cloudflare Worker serves both static files and API endpoints. Frontend uses nanostores for state management and imports types from the Backend for type safety.
 
 ## Development Commands
 
-- `bun run dev` - Start Astro development server with hot reload (port 4321)
-- `bun run build` - Build for production (Astro SSR build)
-- `bun run preview` - Preview locally using Wrangler
+### Primary Commands
+- `bun run dev` - Start both Frontend (4321) and Backend (8787) development servers
+- `bun run build` - Build Frontend static files and copy to Backend assets
+- `bun run preview` - Preview production build using Backend Wrangler dev
 - `bun run deploy` - Build and deploy to Cloudflare Workers
 - `bun run deploy:staging` - Deploy to staging environment
 - `bun run deploy:production` - Deploy to production environment
 
+### Package-specific Commands
+- `bun run --filter frontend dev` - Frontend development server only
+- `bun run --filter backend dev` - Backend development server only
+- `bun run --filter frontend build` - Frontend build only
+- `bun run --filter backend build` - Backend build (copy Frontend assets)
+
 ## Architecture
+
+### Monorepo Structure
+```
+packages/
+├── frontend/              # Astro + React Islands
+│   ├── src/
+│   │   ├── pages/         # Astro pages (static build)
+│   │   ├── islands/       # React Islands (client-side)
+│   │   ├── components/    # UI components
+│   │   ├── stores/        # nanostores state management
+│   │   └── lib/           # API client & types
+│   └── dist/              # Build output
+└── backend/               # Hono API + static file serving
+    ├── src/               # API implementation
+    ├── assets/            # Static files copied from Frontend
+    └── migrations/        # DB migrations
+```
+
+### Data Flow
+1. **Development**: Frontend (4321) → Vite proxy → Backend (8787)
+2. **Production**: All served from Backend Worker
+   - `/api/*` → Hono API
+   - `/*` → Static files (Frontend build output)
+
+### Type Safety
+```typescript
+// Backend exports types
+export type App = typeof api
+
+// Frontend imports types
+import type { App } from 'backend/types'
+```
 
 ### Blog System Architecture
 This is a decoupled blog system where content deployment is separated from site deployment:
@@ -53,35 +92,37 @@ This is a decoupled blog system where content deployment is separated from site 
 - **Data Persistence**: Cloudflare D1 for metadata, R2 for assets
 - **Content Update**: External API-driven, no admin interface
 
-### Astro + Hono Application Structure
-- **Pages**: Located in `src/pages/` directory
+### Frontend Structure (packages/frontend)
+- **Pages**: `src/pages/` directory
   - `index.astro` - Homepage with article list and search
-  - `api/[...route].ts` - Catch-all API route handler using Hono
-    - `/api/articles` - Article listing with pagination, search, tag filtering
-    - `/api/articles/:slug` - Individual article retrieval
-    - `/api/tags` - Tag listing
-    - `/api/resources/:key` - Asset serving from R2 storage
+- **Islands**: Interactive client components in `src/islands/`
+  - `article-grid.tsx` - Article display with state management
+  - `search-control.tsx` - Search interface
+  - `tag-filter-control.tsx` - Tag filtering
+  - `load-more-trigger.tsx` - Infinite scroll trigger
+- **State Management**: nanostores for client state
+- **API Client**: Hono client for type-safe communication
 
-- **Islands**: Interactive client components in `src/components/islands/`
-  - `search-bar.tsx` - Search interface with real-time filtering
-  - `article-list.tsx` - Article display with infinite scroll
-  - `tag-filter.tsx` - Tag filtering system
-  - `counter.tsx` - Interactive counter component
-
-- **Components**: UI components in `src/components/ui/`
-  - Reusable UI components (button, card, input, badge, skeleton)
-  - Built with Tailwind CSS and class-variance-authority
-
-- **Configuration**:
-  - `astro.config.mjs` - Astro configuration with Cloudflare adapter
-  - `src/styles/global.css` - Global styles (processed through Tailwind CSS v4)
-  - Path alias `@/*` points to `src/*`
+### Backend Structure (packages/backend)
+- **API Routes**: Defined in `src/index.ts`
+  - `/api/articles` - Article listing with pagination, search, tag filtering
+  - `/api/articles/:slug` - Individual article retrieval
+  - `/api/tags` - Tag listing
+  - `/api/resources/:key` - Asset serving from R2 storage
+- **Static Serving**: Frontend build output served via `serveStatic`
 
 ## Tech Stack
 
+### Monorepo Management
+- **Package Manager**: Bun workspace
+- **Frontend Package**: `packages/frontend` (Astro + React)
+- **Backend Package**: `packages/backend` (Hono API + static serving)
+
+### Technical Details
 - **Runtime**: Cloudflare Workers with Node.js compatibility
-- **Frontend Framework**: Astro v5 with React integration
+- **Frontend Framework**: Astro v5 (static build) with React islands
 - **API Framework**: Hono v4 for API routing
+- **State Management**: nanostores + React integration
 - **Database**: Cloudflare D1 (SQLite-compatible) with Drizzle ORM
 - **Storage**: Cloudflare R2 (S3-compatible object storage)
 - **Styling**: Tailwind CSS v4 with Vite plugin
@@ -89,7 +130,6 @@ This is a decoupled blog system where content deployment is separated from site 
 - **Icons**: Lucide React
 - **Validation**: Zod for schema validation
 - **Build**: Vite with Astro Cloudflare adapter
-- **Package Manager**: Bun
 - **Testing**: Vitest with Testing Library
 - **Development Environment**: Nix flake with wrangler
 
@@ -112,24 +152,32 @@ This is a decoupled blog system where content deployment is separated from site 
 #### image_cache table
 - Caches resized images to optimize performance
 
-**Database Configuration**:
+**Database Configuration** (packages/backend):
 - Drizzle Kit for schema management and migrations
-- Schema definition: `src/db/schema.ts`
-- Client configuration: `src/db/client.ts`
-- Migration directory: `./migrations`
+- Schema definition: `packages/backend/src/db/schema.ts`
+- Client configuration: `packages/backend/src/db/client.ts`
+- Migration directory: `packages/backend/migrations/`
 
 ## Key Features
 
-- **Markdown Blog**: Article content with metadata support
-- **Resource Management**: Images and assets stored in R2, served via `/api/resources/:key`
-- **Search & Filtering**: Full-text search with tag filtering via `/api/articles`
-- **API Endpoints**: RESTful API using Hono framework
-  - Article listing with pagination (`/api/articles`)
-  - Individual article retrieval (`/api/articles/:slug`)
-  - Tag management (`/api/tags`)
-  - Asset serving with caching (`/api/resources/:key`)
-- **Type Safety**: Zod validation for API requests and responses
-- **Error Handling**: Structured error responses with logging
+### Frontend Features (packages/frontend)
+- **Static Site Generation**: Astro for fast static builds
+- **React Islands**: Interactive client-side components
+- **State Management**: nanostores for lightweight state management
+- **Search & Filtering**: Real-time search, tag filtering, infinite scroll
+
+### Backend Features (packages/backend)
+- **API Server**: Hono for fast API endpoints
+- **Static File Serving**: Frontend build output serving
+- **Database**: Cloudflare D1 + Drizzle ORM
+- **Storage**: Cloudflare R2 for image and asset management
+- **Type Safety**: Backend type definitions used by Frontend
+
+### Integration Features
+- **Monorepo Structure**: Bun workspace with separated concerns
+- **Type Safety**: Backend exports types that Frontend imports
+- **Single Worker**: Both static files and API served from one Worker
+- **Development Proxy**: Vite proxy for seamless development experience
 
 ## Security & Authentication
 
@@ -139,20 +187,21 @@ This is a decoupled blog system where content deployment is separated from site 
 
 ## Deployment Configuration
 
-The project is configured for Cloudflare Workers deployment via `wrangler.jsonc` with environment-specific configs:
-- `wrangler.jsonc` - Default configuration
-- `wrangler.staging.jsonc` - Staging environment
-- `wrangler.production.jsonc` - Production environment
+The project is configured for Cloudflare Workers deployment via `packages/backend/wrangler.jsonc`:
+- `packages/backend/wrangler.jsonc` - Default configuration
+- `packages/backend/wrangler.staging.jsonc` - Staging environment
+- `packages/backend/wrangler.production.jsonc` - Production environment
 
 **Required Bindings**:
 - D1 database binding (`DB`)
 - R2 bucket for asset storage (`R2`)
 - Environment variables as needed
 
-**Build Output**:
-- Astro builds to `./dist` directory
-- Main worker file: `./dist/_worker.js`
-- Static assets served from `./dist` directory
+**Build Process**:
+1. Frontend builds to `packages/frontend/dist/`
+2. Backend copies Frontend assets to `packages/backend/assets/`
+3. Backend Worker serves both API and static files
+4. Deploy script runs Backend build and Wrangler deploy
 
 ## Testing Guidelines
 
