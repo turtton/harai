@@ -1,0 +1,4 @@
+assets/**/*.css
+assets/*.html
+assets/*.ico
+assets/**/*.js
