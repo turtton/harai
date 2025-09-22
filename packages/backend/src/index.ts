@@ -13,6 +13,7 @@ if (typeof globalThis !== 'undefined' && '__STATIC_CONTENT_MANIFEST' in globalTh
     // 開発環境では空の manifest を使用
   }
 }
+
 import { createDrizzleClient, type Env } from '@/db/client'
 import { DatabaseError, getErrorResponse, NotFoundError } from '@/db/errors'
 import { logError } from '@/db/logger'
