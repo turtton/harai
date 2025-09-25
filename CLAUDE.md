@@ -48,9 +48,9 @@ This is a monorepo Astro + Hono blog application for Cloudflare Workers. The sys
 
 ### Package-specific Commands
 - `bun run --filter frontend dev` - Frontend development server only
-- `bun run --filter backend dev` - Backend development server only
+- `bun run --filter @harai/backend dev` - Backend development server only
 - `bun run --filter frontend build` - Frontend build only
-- `bun run --filter backend build` - Backend build (copy Frontend assets)
+- `bun run --filter @harai/backend build` - Backend build (copy Frontend assets)
 
 ## Architecture
 

@@ -134,9 +134,9 @@ bun run --filter frontend build
 bun run --filter frontend test
 
 # Backend のみ
-bun run --filter backend dev
-bun run --filter backend build
-bun run --filter backend test
+bun run --filter @harai/backend dev
+bun run --filter @harai/backend build
+bun run --filter @harai/backend test
 ```
 
 ## アーキテクチャ
