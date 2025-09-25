@@ -1,0 +1,37 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "harai",
+  "main": "./src/index.ts",
+  "compatibility_date": "2025-08-31",
+  //  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./assets"
+  },
+
+  // "vars": {
+  //   "MY_VAR": "my-variable"
+  // },
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "MY_KV_NAMESPACE",
+  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  //   }
+  // ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "harai-blog-assets"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "harai-blog",
+      "database_id": "5e6b7c1a-49c0-4433-8eec-f1d533a90f53",
+      "migrations_dir": "./migrations"
+    }
+  ]
+  // "ai": {
+  //   "binding": "AI"
+  // }
+}

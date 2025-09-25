@@ -1,0 +1,45 @@
+{
+  "name": "frontend",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "biome lint",
+    "format": "prettier -w **/*.astro && biome format --write",
+    "check": "prettier -c **/*.astro && biome check --write",
+    "ci": "biome check",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --build"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.3.0",
+    "@nanostores/react": "^1.0.0",
+    "@radix-ui/react-slot": "^1.2.3",
+    "astro": "^5.13.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.542.0",
+    "nanostores": "^1.0.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@harai/backend": "workspace:*",
+    "happy-dom": "^14.0.0",
+    "shadcn": "^3.0.0",
+    "tailwindcss": "^4.0.9",
+    "tw-animate-css": "^1.3.7",
+    "vite": "^6.3.5"
+  }
+}

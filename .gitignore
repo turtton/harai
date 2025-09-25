@@ -15,6 +15,7 @@ dist/
 .direnv
 coverage
 .astro
+tsconfig.tsbuildinfo
 
 # deps
 node_modules/
